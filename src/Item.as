@@ -1,4 +1,7 @@
 package {
+	import display.DisplayQueue;
+	import display.PositionedSprite;
+	
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
 	import flash.net.URLLoader;
@@ -33,8 +36,6 @@ package {
 		private var textLoader:URLLoader = new URLLoader();
 		
 		private var _dispatcher:EventDispatcher;
-		private var zx_offset: Number = Math.cos(Constant.ISOMETRIC_ANGLE)*Constant.BLOCK_WIDTH*.5;
-		private var zy_offset: Number = Math.sin(Constant.ISOMETRIC_ANGLE)*Constant.BLOCK_WIDTH*.5;
 		
 		private var imageIndex:int = 0;
 		private var spritePrefix:String = null;
@@ -94,16 +95,22 @@ package {
 		public function drawObjectGuidelines(cameraRotation:Number, ySize:int, color:int):void {
 			this.removeChildren(0, this.numChildren);
 			
-			var xx:int = Constant.SUITCASE_OFFSET[cameraRotation].x + position.x*Constant.BLOCK_WIDTH - zx_offset*position.z;
-			var yy:int = Constant.SUITCASE_OFFSET[cameraRotation].y + position.y*Constant.BLOCK_WIDTH - zy_offset*position.z - currentSprite.height;
+			var positionedSprite :PositionedSprite = new PositionedSprite(currentSprite, cameraRotation, position);
+			DisplayQueue.addSprite(positionedSprite);
+			
+			/*
+			var xx:int = Constant.SUITCASE_OFFSET[cameraRotation].x + position.x*Constant.BLOCK_WIDTH - zx_offset*position.z - 250;
+			var yy:int = Constant.SUITCASE_OFFSET[cameraRotation].y - position.y*Constant.BLOCK_WIDTH - zy_offset*position.z - currentSprite.height + 125;
 			
 			
-			trace("position: " + xx + " " + yy);
+			trace("sprite position: " + xx + " " + yy + " postion: " + position.x + " " + position.y);
 			currentSprite.x = xx;
 			currentSprite.y = yy;
 			this.addChild(currentSprite);
+			*/
 			
 			var cameraMat:Matrix = new Matrix(0, Math.PI*cameraRotation/2, 0);
+			
 			
 			//green out quads where the item is being placed
 			for (var x: int = 0; x < positionedSkeleton.length; x++) {
@@ -114,28 +121,26 @@ package {
 				
 				//x face
 				var placingQuadFront:Quad = new Quad(Constant.BLOCK_WIDTH, -Constant.BLOCK_WIDTH, color);
-				placingQuadFront.x = Constant.SUITCASE_OFFSET[cameraRotation].x + p.x*Constant.BLOCK_WIDTH - zx_offset*p.z;
-				placingQuadFront.y = Constant.SUITCASE_OFFSET[cameraRotation].y - p.y*Constant.BLOCK_WIDTH - zy_offset*p.z;
+				placingQuadFront.x = Constant.SUITCASE_OFFSET[cameraRotation].x + p.x*Constant.BLOCK_WIDTH - Constant.ZX_OFFSET*p.z;
+				placingQuadFront.y = Constant.SUITCASE_OFFSET[cameraRotation].y - p.y*Constant.BLOCK_WIDTH - Constant.ZY_OFFSET*p.z;
 				placingQuadFront.alpha = 0.25;
 				this.addChild(placingQuadFront);
 				
 				//y face
 				var placingQuadTop:Quad = new Quad(Constant.BLOCK_WIDTH, -Constant.BLOCK_WIDTH*.5, color);
-				placingQuadTop.x = Constant.SUITCASE_OFFSET[cameraRotation].x + p.x*Constant.BLOCK_WIDTH - zx_offset*p.z;
-				placingQuadTop.y = Constant.SUITCASE_OFFSET[cameraRotation].y - (p.y+1)*Constant.BLOCK_WIDTH - zy_offset*p.z;
+				placingQuadTop.x = Constant.SUITCASE_OFFSET[cameraRotation].x + p.x*Constant.BLOCK_WIDTH - Constant.ZX_OFFSET*p.z;
+				placingQuadTop.y = Constant.SUITCASE_OFFSET[cameraRotation].y - (p.y+1)*Constant.BLOCK_WIDTH - Constant.ZY_OFFSET*p.z;
 				placingQuadTop.skewX = -(Math.PI/2 - Constant.ISOMETRIC_ANGLE);
 				placingQuadTop.alpha = 0.25;
 				this.addChild(placingQuadTop);
 				
 				//z face
 				var placingQuadLeft:Quad = new Quad(-Constant.BLOCK_WIDTH*.5, -Constant.BLOCK_WIDTH, color);
-				placingQuadLeft.x = Constant.SUITCASE_OFFSET[cameraRotation].x + p.x*Constant.BLOCK_WIDTH - zx_offset*p.z;
-				placingQuadLeft.y = Constant.SUITCASE_OFFSET[cameraRotation].y - p.y*Constant.BLOCK_WIDTH - zy_offset*p.z;
+				placingQuadLeft.x = Constant.SUITCASE_OFFSET[cameraRotation].x + p.x*Constant.BLOCK_WIDTH - Constant.ZX_OFFSET*p.z;
+				placingQuadLeft.y = Constant.SUITCASE_OFFSET[cameraRotation].y - p.y*Constant.BLOCK_WIDTH - Constant.ZY_OFFSET*p.z;
 				placingQuadLeft.skewY =  Constant.ISOMETRIC_ANGLE;
 				placingQuadLeft.alpha = .25;
 				this.addChild(placingQuadLeft);
-				
-				
 			}
 			
 			

@@ -1,7 +1,10 @@
 // ActionScript file
 package {
 	
+	import display.DisplayQueue;
+	
 	import flash.events.EventDispatcher;
+	import flash.net.dns.AAAARecord;
 	
 	import starling.display.Quad;
 	import starling.display.Sprite;
@@ -26,6 +29,9 @@ package {
 		private var zy_offset: Number = Math.sin(Constant.ISOMETRIC_ANGLE)*Constant.BLOCK_WIDTH*.5;
 		
 		public var done:Boolean = false;
+		
+		
+		private var displayQueue:DisplayQueue = new DisplayQueue();
 		
 		public function Suitcase(size:IntPoint) {
 			Constant.SUITCASE_OFFSET = new Array(4);
@@ -101,6 +107,7 @@ package {
 		
 		public function drawSuitcase():void {
 			this.removeChildren(0, this.numChildren);
+			displayQueue.clearQueue();
 			
 			//draw objects
 			for (i = 0; i < placedItems.length; i++){
@@ -112,6 +119,9 @@ package {
 				queuedItems[item_index].drawObjectGuidelines(orientation.y, size.y, Color.BLUE);
 				this.addChild(queuedItems[item_index]);
 			}
+			
+			displayQueue.drawObjects();
+			this.addChild(displayQueue);
 			
 			//draw guidelines
 			//trace("Rotated bag: " + rotatedBag.toString() + " rotation: " + orientation.y);
@@ -302,13 +312,7 @@ package {
 			transPoint = cameraMat.rotateInt(transPoint);
 			item.position.add(transPoint);
 			
-			//todo - calculate orientation based on current orientation
-			trace(rotPoint);
 			var rotMat:Matrix = new Matrix(rotPoint.x, rotPoint.y + Math.PI*orientation.y/2, rotPoint.z);
-			//var calcMat:Matrix = new Matrix(item.orientation.x, item.orientation.y + Math.PI*orientation.y/2, item.orientation.z);
-			//var rotatedOrientation:Point = calcMat.rotate(rotPoint);
-			//item.orientation.add(rotatedOrientation);
-			//trace("Rotating " + rotPoint + " to " + rotatedOrientation);
 			
 			//var rotMat:Matrix = new Matrix (item.orientation.x, item.orientation.y, item.orientation.z);
 			var minPoints:Point = new Point(0, 0, 0);
@@ -333,6 +337,8 @@ package {
 				
 				item.positionedSkeleton.push(new SkeletonPoint(p));
 			}
+			
+			trace("Max points: " + maxPoints.toString());
 			
 			//just enforce the boundaries on the 0, 0 point so they don't get too far out of the suitcase
 			if (item.position.x + minPoints.x < 0) item.position.x = -minPoints.x;
@@ -362,6 +368,7 @@ package {
 			for (i = 0; i < item.positionedSkeleton.length; i++) {
 				item.positionedSkeleton[i].point.add(item.position);
 				p = item.positionedSkeleton[i].point;
+				trace("Positioned Skeleton " + i + " position: " + p.toString());
 				if (p.y >= size.y) {
 					item.positionedSkeleton[i].placeable = false;
 					item.placeable = false;
