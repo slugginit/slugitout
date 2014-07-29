@@ -47,6 +47,11 @@ package
 		[Embed(source="../media/graphics/background.png")]
 		public static const BgWelcome:Class;
 		
+		[Embed(source="../media/graphics/bucket.png")]	
+		public static const bucket:Class;
+		
+		[Embed(source="../media/graphics/belt.png")]	
+		public static const belt:Class;
 		/**
 		 * Texture Cache 
 		 */

@@ -53,6 +53,8 @@ package com.slugitout.tsapsa.screens
 		//private var aboutBtn:Button;
 		
 		private var hero:Image;
+		private var bucket:Image;
+		private var belt:Image;
 		
 		private var suitcase:Suitcase = new Suitcase(new IntPoint(8, 5, 5));
 		/*private var aboutText:TextField;
@@ -173,14 +175,24 @@ package com.slugitout.tsapsa.screens
 			
 			this.addChild(suitcase);
 			
+			//draw the item swap bucket
+			bucket = new Image(Assets.getTexture("bucket"));
+			bucket.x = 1000;
+			bucket.y = 450;
+			bucket.width = 256;
+			bucket.height =256;
+			this.addChild(bucket);
+			
+			
+			belt = new Image(Assets.getTexture("belt"));
+			belt.x = 0;
+			belt.y = 0;
+			this.addChild(belt);
+			
+			
+			
 		}
-		
-		/**
-		 * On back button click from about screen. 
-		 * @param event
-		 * 
-		 */
-		private function onAboutBackClick(event:Event):void
+			private function onAboutBackClick(event:Event):void
 		{
 			//if (!Sounds.muted) Sounds.sndCoffee.play();
 			
