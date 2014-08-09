@@ -361,6 +361,7 @@ package {
 				}
 			}
 			
+			trace("Y pos is " + y_pos);
 			item.position.y = y_pos;
 			
 			//one more pass to color x and z levels

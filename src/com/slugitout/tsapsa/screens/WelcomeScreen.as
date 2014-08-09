@@ -77,7 +77,7 @@ package com.slugitout.tsapsa.screens
 			suitcase.addFirstItem("../templates/Noodle.txt", "noodle", _dispatcher);
 			suitcase.addItemtoQueue("../templates/Cube1.txt", "sock");
 			suitcase.addItemtoQueue("../templates/Cube1.txt", "sock");
-			suitcase.addItemtoQueue("../templates/ComplexObj.txt", "noodle");
+			suitcase.addItemtoQueue("../templates/Noodle.txt", "noodle");
 			
 			suitcase.getQueueditem().addEventListener(Event.COMPLETE, drawScreen);
 		}
