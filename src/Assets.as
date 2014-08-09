@@ -52,6 +52,10 @@ package
 		
 		[Embed(source="../media/graphics/belt.png")]	
 		public static const belt:Class;
+		
+		[Embed(source="../media/graphics/score.png")]	
+		public static const scoreimage:Class;
+		
 		/**
 		 * Texture Cache 
 		 */

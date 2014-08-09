@@ -55,6 +55,7 @@ package com.slugitout.tsapsa.screens
 		private var hero:Image;
 		private var bucket:Image;
 		private var belt:Image;
+		private var scoreimage:Image;
 		
 		private var suitcase:Suitcase = new Suitcase(new IntPoint(8, 5, 5));
 		/*private var aboutText:TextField;
@@ -177,18 +178,26 @@ package com.slugitout.tsapsa.screens
 			
 			//draw the item swap bucket
 			bucket = new Image(Assets.getTexture("bucket"));
-			bucket.x = 1000;
-			bucket.y = 450;
+			bucket.x = 0;
+			bucket.y = 500;
 			bucket.width = 256;
 			bucket.height =256;
 			this.addChild(bucket);
 			
-			
+			//draw the belt
 			belt = new Image(Assets.getTexture("belt"));
 			belt.x = 0;
 			belt.y = 0;
+			belt.width = 256;
+			belt.height = 500;
 			this.addChild(belt);
 			
+			scoreimage = new Image(Assets.getTexture("scoreimage"));
+			scoreimage.x = 1050;
+			scoreimage.y = 0;
+			scoreimage.width = 64;
+			scoreimage.height = 64;
+			this.addChild(scoreimage);
 			
 			
 		}
