@@ -175,6 +175,9 @@ package com.slugitout.tsapsa.screens
 			bg.blendMode = BlendMode.NONE;
 			
 			this.addChild(suitcase);
+			suitcase.moveItem(new IntPoint(0, 0, 0),new Point(0, 0, 0));
+			suitcase.rotateCamera(0);
+			suitcase.drawSuitcase();
 			
 			//draw the item swap bucket
 			bucket = new Image(Assets.getTexture("bucket"));

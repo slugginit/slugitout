@@ -19,6 +19,7 @@ package
 	import starling.display.Sprite;
 	import starling.events.Event;
 	import com.slugitout.tsapsa.screens.WelcomeScreen;
+	import com.slugitout.tsapsa.screens.MenuScreen;
 	
 	/**
 	 * This class is the primary Starling Sprite based class
@@ -70,6 +71,7 @@ package
 		private function initScreens():void
 			
 		{
+			this.addEventListener("play",playScreen);
 			//this.addEventListener(NavigationEvent.CHANGE_SCREEN, onChangeScreen);
 			
 			// InGame screen.
@@ -78,6 +80,8 @@ package
 			//this.addChild(screenInGame);
 			
 			// Welcome screen.
+			screenMenu = new MenuScreen();
+			this.addChild(screenMenu);
 			
 			screenWelcome = new WelcomeScreen();
 			this.addChild(screenWelcome);
@@ -93,6 +97,11 @@ package
 			screenWelcome.initialize();
 		}
 		
+		private function playScreen():void
+		{
+					screenMenu.disposeTemporarily();
+					screenWelcome.initialize();
+		}
 		/**
 		 
 		 * On navigation from different screens. 
