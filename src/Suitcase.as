@@ -35,10 +35,10 @@ package {
 		
 		public function Suitcase(size:IntPoint) {
 			Constant.SUITCASE_OFFSET = new Array(4);
-			Constant.SUITCASE_OFFSET[0] = new IntPoint(300, 600, 0);
-			Constant.SUITCASE_OFFSET[1] = new IntPoint(200, 500, 0);
-			Constant.SUITCASE_OFFSET[2] = new IntPoint(700, 500, 0);
-			Constant.SUITCASE_OFFSET[3] = new IntPoint(700, 600, 0);
+			Constant.SUITCASE_OFFSET[0] = new IntPoint(500, 600, 0);
+			Constant.SUITCASE_OFFSET[1] = new IntPoint(400, 500, 0);
+			Constant.SUITCASE_OFFSET[2] = new IntPoint(900, 500, 0);
+			Constant.SUITCASE_OFFSET[3] = new IntPoint(900, 600, 0);
 			
 			
 			orientation = new IntPoint(0, 0, 0);
@@ -296,9 +296,16 @@ package {
 		public function rotateCamera(cameraOffset:Number) : void {
 			orientation.y += (cameraOffset + 4);
 			orientation.y = orientation.y%4;
+			trace("Orientation is " + orientation.y);
 			
 			var cameraMat:Matrix = new Matrix(0, Math.PI*orientation.y/2, 0);
 			rotatedBag = cameraMat.rotateInt(size);
+			
+			//rotate all the items while we're at it
+			for (var i:int = 0; i < placedItems.length; i++)
+				placedItems[i].rotateItem(new Point(0, -cameraOffset*Math.PI/2, 0));
+			if (queuedItems.length > 0)
+				queuedItems[item_index].rotateItem(new Point(0, -cameraOffset*Math.PI/2, 0));
 							
 		}
 		
@@ -309,10 +316,14 @@ package {
 			
 			var item:Item = queuedItems[item_index];
 			var cameraMat:Matrix = new Matrix(0, -Math.PI*orientation.y/2, 0);
+			trace("Old transPoint: " + transPoint + " old position: " + item.position);
 			transPoint = cameraMat.rotateInt(transPoint);
-			item.position.add(transPoint);
 			
-			var rotMat:Matrix = new Matrix(rotPoint.x, rotPoint.y + Math.PI*orientation.y/2, rotPoint.z);
+			item.position.add(transPoint);
+			trace("New transPoint: " + transPoint + " new position: " + item.position);
+
+			
+			var rotMat:Matrix = new Matrix(rotPoint.x, rotPoint.y, rotPoint.z);
 			
 			//var rotMat:Matrix = new Matrix (item.orientation.x, item.orientation.y, item.orientation.z);
 			var minPoints:Point = new Point(0, 0, 0);
@@ -328,7 +339,7 @@ package {
 				item.skeleton[i] = new IntPoint(p.x, p.y, p.z);
 				
 				if (p.x < minPoints.x) minPoints.x = p.x;
-				if (p.y < minPoints.x) minPoints.y = p.y;
+				if (p.y < minPoints.y) minPoints.y = p.y;
 				if (p.z < minPoints.z) minPoints.z = p.z;
 				
 				if (p.x > maxPoints.x) maxPoints.x = p.x;
@@ -338,7 +349,8 @@ package {
 				item.positionedSkeleton.push(new SkeletonPoint(p));
 			}
 			
-			trace("Max points: " + maxPoints.toString());
+			//trace("Max points: " + maxPoints.toString());
+			//trace("Min points: " + minPoints.toString());
 			
 			//just enforce the boundaries on the 0, 0 point so they don't get too far out of the suitcase
 			if (item.position.x + minPoints.x < 0) item.position.x = -minPoints.x;
@@ -361,7 +373,6 @@ package {
 				}
 			}
 			
-			trace("Y pos is " + y_pos);
 			item.position.y = y_pos;
 			
 			//one more pass to color x and z levels
@@ -369,7 +380,7 @@ package {
 			for (i = 0; i < item.positionedSkeleton.length; i++) {
 				item.positionedSkeleton[i].point.add(item.position);
 				p = item.positionedSkeleton[i].point;
-				trace("Positioned Skeleton " + i + " position: " + p.toString());
+				//trace("Positioned Skeleton " + i + " position: " + p.toString());
 				if (p.y >= size.y) {
 					item.positionedSkeleton[i].placeable = false;
 					item.placeable = false;

@@ -96,6 +96,7 @@ package {
 			this.removeChildren(0, this.numChildren);
 			
 			var positionedSprite :PositionedSprite = new PositionedSprite(currentSprite, cameraRotation, position);
+			trace("display queue position: " + position);
 			DisplayQueue.addSprite(positionedSprite);
 			
 			/*
@@ -154,24 +155,53 @@ package {
 		}
 
 		public function rotateItem(rotPoint:Point):void {
+			trace("Rotating object: " + rotPoint.toString());
 			var mapping:ArtMapping = new ArtMapping();
 			
-			if (rotPoint.x != 0) {
+			if (rotPoint.x > 0) {
 				trace("Rotating " + imageIndex + " to " + ArtMapping.mappings[imageIndex][0]);
 				imageIndex = ArtMapping.mappings[imageIndex][0];
 			}
-			if (rotPoint.y != 0) {
+			if (rotPoint.y > 0) {
 				trace("Rotating " + imageIndex + " to " + ArtMapping.mappings[imageIndex][1]);
 				imageIndex = ArtMapping.mappings[imageIndex][1];
 			}
-			if (rotPoint.z != 0) {
+			if (rotPoint.z > 0) {
 				trace("Rotating " + imageIndex + " to " + ArtMapping.mappings[imageIndex][2]);
 				imageIndex = ArtMapping.mappings[imageIndex][2];
 			}
+			
+			//if it's less than 0, we have do a reverse lookup
+			if (rotPoint.x < 0) {
+				for (var i:int = 0; i < ArtMapping.mappings.length; i++) {
+					if (ArtMapping.mappings[i][0] == imageIndex) {
+						imageIndex = i;
+						break;
+					}
+				}
+			}
+			if (rotPoint.y < 0) {
+				for (var k:int = 0; k < ArtMapping.mappings.length; k++) {
+					if (ArtMapping.mappings[k][1] == imageIndex) {
+						imageIndex = k;
+						break;
+					}
+				}
+			}
+			if (rotPoint.z < 0) {
+				for (var j:int = 0; j < ArtMapping.mappings.length; j++) {
+					if (ArtMapping.mappings[j][2] == imageIndex) {
+						imageIndex = j;
+						break;
+					}
+				}
+			}
+
+
 				
 			currentSprite = new Image(Assets.getTexture(spritePrefix + imageIndex));
-			currentSprite.scaleX = .5;
-			currentSprite.scaleY = .5;
+			currentSprite.scaleX = .75;
+			currentSprite.scaleY = .75;
 		}
 
 		

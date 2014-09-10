@@ -32,6 +32,7 @@ package
 	{
 		/** Screen - Welcome or Main Menu. */
 		private var screenWelcome:WelcomeScreen;
+		private var screenMenu:MenuScreen;
 		
 		
 		/** Screen - InGame. */

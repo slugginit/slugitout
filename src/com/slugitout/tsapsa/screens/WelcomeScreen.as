@@ -124,15 +124,18 @@ package com.slugitout.tsapsa.screens
 				rotPoint.z += Math.PI/2;
 			
 			//camera rotation
-			if (e.keyCode == Keyboard.Q)
+			if (e.keyCode == Keyboard.Q){
 				cameraRotation -= 1;
-			if (e.keyCode == Keyboard.E)
+				suitcase.rotateCamera(cameraRotation);	
+			}
+			if (e.keyCode == Keyboard.E) {
 				cameraRotation += 1;
+				suitcase.rotateCamera(cameraRotation);
+			}
 			
 			
 			
 			suitcase.moveItem(transPoint, rotPoint);
-			suitcase.rotateCamera(cameraRotation);
 			
 			
 			//place item
