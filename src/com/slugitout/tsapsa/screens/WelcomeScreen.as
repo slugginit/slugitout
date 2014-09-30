@@ -76,9 +76,18 @@ package com.slugitout.tsapsa.screens
 			var _dispatcher:EventDispatcher = new EventDispatcher();
 			_dispatcher.addEventListener("Loaded", drawScreen);
 			suitcase.addFirstItem("../templates/Noodle.txt", "noodle", _dispatcher);
-			suitcase.addItemtoQueue("../templates/Cube1.txt", "sock");
-			suitcase.addItemtoQueue("../templates/Cube1.txt", "sock");
-			suitcase.addItemtoQueue("../templates/Noodle.txt", "noodle");
+			//suitcase.addItemtoQueue("../templates/Cube1.txt", "sock");
+			//suitcase.addItemtoQueue("../templates/Cube1.txt", "sock");
+			//suitcase.addItemtoQueue("../templates/Noodle.txt", "noodle");
+			suitcase.addItemtoQueue("../templates/boot.txt", "boot");
+			suitcase.addItemtoQueue("../templates/bottle.txt", "bottle");
+			suitcase.addItemtoQueue("../templates/camera.txt", "camera");
+			suitcase.addItemtoQueue("../templates/doll.txt", "doll");
+			suitcase.addItemtoQueue("../templates/hairdryer.txt", "hairdryer");
+			suitcase.addItemtoQueue("../templates/handcuffs.txt", "handcuffs");
+			suitcase.addItemtoQueue("../templates/money.txt", "money");
+			
+			
 			
 			suitcase.getQueueditem().addEventListener(Event.COMPLETE, drawScreen);
 		}

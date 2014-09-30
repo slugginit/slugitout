@@ -162,7 +162,7 @@ package {
 				trace("Rotating " + imageIndex + " to " + ArtMapping.mappings[imageIndex][0]);
 				imageIndex = ArtMapping.mappings[imageIndex][0];
 			}
-			if (rotPoint.y > 0) {
+			if (rotPoint.y < 0) {
 				trace("Rotating " + imageIndex + " to " + ArtMapping.mappings[imageIndex][1]);
 				imageIndex = ArtMapping.mappings[imageIndex][1];
 			}
@@ -180,7 +180,7 @@ package {
 					}
 				}
 			}
-			if (rotPoint.y < 0) {
+			if (rotPoint.y > 0) {
 				for (var k:int = 0; k < ArtMapping.mappings.length; k++) {
 					if (ArtMapping.mappings[k][1] == imageIndex) {
 						imageIndex = k;
