@@ -6,6 +6,8 @@ package {
 	import flash.events.EventDispatcher;
 	import flash.net.dns.AAAARecord;
 	
+	import flashx.textLayout.formats.Float;
+	
 	import starling.display.Quad;
 	import starling.display.Sprite;
 	import starling.utils.Color;
@@ -25,8 +27,10 @@ package {
 		private var queuedItems:Vector.<Item> = new Vector.<Item>();
 		private var item_index:int = 0;
 		
-		private var zx_offset: Number = Math.cos(Constant.ISOMETRIC_ANGLE)*Constant.BLOCK_WIDTH*.5;
-		private var zy_offset: Number = Math.sin(Constant.ISOMETRIC_ANGLE)*Constant.BLOCK_WIDTH*.5;
+		private var z_scale: Number = .615;
+		
+		private var zx_offset: Number = Math.cos(Math.PI/4)*Constant.BLOCK_WIDTH*z_scale;
+		private var zy_offset: Number = Math.sin(Math.PI/4)*Constant.BLOCK_WIDTH*z_scale;
 		
 		public var done:Boolean = false;
 		
@@ -35,7 +39,7 @@ package {
 		
 		public function Suitcase(size:IntPoint) {
 			Constant.SUITCASE_OFFSET = new Array(4);
-			Constant.SUITCASE_OFFSET[0] = new IntPoint(500, 600, 0);
+			Constant.SUITCASE_OFFSET[0] = new IntPoint(500, 700, 0);
 			Constant.SUITCASE_OFFSET[1] = new IntPoint(400, 500, 0);
 			Constant.SUITCASE_OFFSET[2] = new IntPoint(900, 500, 0);
 			Constant.SUITCASE_OFFSET[3] = new IntPoint(900, 600, 0);
@@ -125,24 +129,39 @@ package {
 			
 			//draw guidelines
 			//trace("Rotated bag: " + rotatedBag.toString() + " rotation: " + orientation.y);
+			var left_offset:Number = Math.sin(Math.PI/4)*(Constant.BLOCK_WIDTH*.615);
+			var baseQuad:Quad = new Quad(10, 10, Color.YELLOW);
+			baseQuad.x = Constant.SUITCASE_OFFSET[orientation.y].x;
+			baseQuad.y = Constant.SUITCASE_OFFSET[orientation.y].y;
+			this.addChild(baseQuad);
+			
+			trace("Rotated bag: " + rotatedBag.toString());
 			for (var i:int = 0; i < size.y; i++) {
 				//front face horizontal lines
-				var frontQuad:Quad = new Quad(Constant.BLOCK_WIDTH*(rotatedBag.x), 1, Color.WHITE);
+				var frontQuad:Quad = new Quad(Constant.BLOCK_WIDTH*(rotatedBag.x), 1, Color.GREEN);
+				frontQuad.rotation = -Math.PI/24.0;
 				frontQuad.x = Constant.SUITCASE_OFFSET[orientation.y].x;
 				frontQuad.y = Constant.SUITCASE_OFFSET[orientation.y].y - i*Constant.BLOCK_WIDTH;
 				if (rotatedBag.z < 0) {
 					frontQuad.x -= (rotatedBag.z+1)*zx_offset;
 					frontQuad.y -= (rotatedBag.z+1)*zy_offset;
 				}
-				if (rotatedBag.x < 0) frontQuad.x += Constant.BLOCK_WIDTH;
+				if (rotatedBag.x < 0) {
+					frontQuad.x += Constant.BLOCK_WIDTH;
+				}
+				
 				this.addChild(frontQuad);
 				
+				
 				//left face horizontal lines
-				var leftQuad:Quad = new Quad(Constant.BLOCK_WIDTH*rotatedBag.z*.5, 1, Color.WHITE);
-				leftQuad.rotation = Math.PI + Constant.ISOMETRIC_ANGLE;
+				var leftQuad:Quad = new Quad(Constant.BLOCK_WIDTH*rotatedBag.z*.615, 1, Color.WHITE);
+				leftQuad.rotation = -Math.PI*3/4;
 				leftQuad.x = Constant.SUITCASE_OFFSET[orientation.y].x;
-				if (rotatedBag.x < 0) leftQuad.x += (rotatedBag.x+1)*Constant.BLOCK_WIDTH;
 				leftQuad.y = Constant.SUITCASE_OFFSET[orientation.y].y - i*Constant.BLOCK_WIDTH;
+				if (rotatedBag.x < 0) {
+					leftQuad.x += (rotatedBag.x+1)*Constant.BLOCK_WIDTH;
+					leftQuad.y += Math.sin(-Math.PI/24)*Constant.BLOCK_WIDTH*(rotatedBag.x);
+				}
 				if (rotatedBag.z < 0) {
 					leftQuad.x -= zx_offset;
 					leftQuad.y -= zy_offset;
@@ -150,26 +169,35 @@ package {
 				this.addChild(leftQuad);
 			}
 			
+			var horizontal_offset:Number = Math.tan(Math.PI/24)*Constant.BLOCK_WIDTH;
+			var y_offset:Number = Math.sin(-Math.PI/4)*Constant.BLOCK_WIDTH*rotatedBag.z;
+			
 			for (var k:int = 0; k <= Math.abs(rotatedBag.x); k++) {
 				//front face vertical lines
-				var vertQuad:Quad = new Quad(Constant.BLOCK_WIDTH*(size.y), 1, Color.WHITE);
-				vertQuad.rotation = Math.PI/2;
+				var vertQuad:Quad = new Quad(Constant.BLOCK_WIDTH*(size.y), 1, Color.GREEN);
+				vertQuad.rotation = -Math.PI/2;
 				vertQuad.x = Constant.SUITCASE_OFFSET[orientation.y].x + k*Constant.BLOCK_WIDTH;
-				vertQuad.y = Constant.SUITCASE_OFFSET[orientation.y].y - (rotatedBag.y)*Constant.BLOCK_WIDTH;
+				vertQuad.y = Constant.SUITCASE_OFFSET[orientation.y].y - horizontal_offset*k;
 				if (rotatedBag.z < 0) {
 					vertQuad.x -= (rotatedBag.z+1)*zx_offset;
 					vertQuad.y -= (rotatedBag.z+1)*zy_offset;
 				}
-				if (rotatedBag.x < 0) vertQuad.x += (rotatedBag.x+1)*Constant.BLOCK_WIDTH;
+				if (rotatedBag.x < 0) {
+					vertQuad.x += (rotatedBag.x+1)*Constant.BLOCK_WIDTH;
+					vertQuad.y += (rotatedBag.x)*Math.sin(-Math.PI/24)*Constant.BLOCK_WIDTH;
+				}
 				this.addChild(vertQuad);
 				
 				
 				//top face vertical lines
-				var topQuad:Quad = new Quad(Constant.BLOCK_WIDTH*(rotatedBag.z)*.5, 1, Color.WHITE);
-				topQuad.rotation = Math.PI + Constant.ISOMETRIC_ANGLE;
+				var topQuad:Quad = new Quad(Constant.BLOCK_WIDTH*(rotatedBag.z)*.615, 1, Color.PURPLE);
+				topQuad.rotation = -Math.PI*3/4;
 				topQuad.x = Constant.SUITCASE_OFFSET[orientation.y].x + k*Constant.BLOCK_WIDTH;
-				if (rotatedBag.x < 0) topQuad.x += (rotatedBag.x+1)*Constant.BLOCK_WIDTH;
-				topQuad.y = Constant.SUITCASE_OFFSET[orientation.y].y - (rotatedBag.y)*Constant.BLOCK_WIDTH;
+				topQuad.y = Constant.SUITCASE_OFFSET[orientation.y].y - (rotatedBag.y)*Constant.BLOCK_WIDTH - horizontal_offset*k;
+				if (rotatedBag.x < 0) { 
+					topQuad.x += (rotatedBag.x+1)*Constant.BLOCK_WIDTH; //(rotatedBag.x+1)*Constant.BLOCK_WIDTH;
+					topQuad.y += Math.sin(-Math.PI/24)*Constant.BLOCK_WIDTH*rotatedBag.x;
+				}
 				if (rotatedBag.z < 0) {
 					topQuad.x -= zx_offset;
 					topQuad.y -= zy_offset;
@@ -177,12 +205,15 @@ package {
 				this.addChild(topQuad);
 			}
 			
+			
+			
 			for (var j:int = 0; j <= Math.abs(rotatedBag.z); j++) {
 				//top face horizontal lines
-				var topZQuad:Quad = new Quad(Constant.BLOCK_WIDTH*(rotatedBag.x), 1, Color.WHITE);
+				var topZQuad:Quad = new Quad(Constant.BLOCK_WIDTH*(rotatedBag.x), 1, Color.PURPLE);
+				topZQuad.rotation = -Math.PI/24.0;
 				topZQuad.x = Constant.SUITCASE_OFFSET[orientation.y].x - zx_offset*j;
 				if (rotatedBag.x < 0) topZQuad.x += Constant.BLOCK_WIDTH;
-				topZQuad.y = Constant.SUITCASE_OFFSET[orientation.y].y - zy_offset*j - (rotatedBag.y)*Constant.BLOCK_WIDTH;
+				topZQuad.y = Constant.SUITCASE_OFFSET[orientation.y].y /*- zy_offset*j*/ - left_offset*j - (rotatedBag.y)*Constant.BLOCK_WIDTH;
 				if (rotatedBag.z < 0) {
 					topZQuad.x -= (rotatedBag.z+1)*zx_offset;
 					topZQuad.y -= (rotatedBag.z+1)*zy_offset;
@@ -193,9 +224,12 @@ package {
 				//left face vertical lines
 				var leftZQuad:Quad = new Quad(Constant.BLOCK_WIDTH*(size.y), 1, Color.WHITE);
 				leftZQuad.rotation = Math.PI/2;
-				leftZQuad.x = Constant.SUITCASE_OFFSET[orientation.y].x - zx_offset*j;
-				if (rotatedBag.x < 0) leftZQuad.x += (rotatedBag.x+1)*Constant.BLOCK_WIDTH;
-				leftZQuad.y = Constant.SUITCASE_OFFSET[orientation.y].y - zy_offset*j - (size.y)*Constant.BLOCK_WIDTH;
+				leftZQuad.x = Constant.SUITCASE_OFFSET[orientation.y].x /*- zx_offset*j */- left_offset*j;
+				leftZQuad.y = Constant.SUITCASE_OFFSET[orientation.y].y - /*zy_offset*j -*/ (size.y)*Constant.BLOCK_WIDTH - left_offset*j;
+				if (rotatedBag.x < 0) {
+					leftZQuad.x += (rotatedBag.x+1)*Constant.BLOCK_WIDTH;
+					leftZQuad.y += (rotatedBag.x)*Math.sin(-Math.PI/24)*Constant.BLOCK_WIDTH;
+				}
 				if (rotatedBag.z < 0) {
 					leftZQuad.x -= (rotatedBag.z+1)*zx_offset;
 					leftZQuad.y -= (rotatedBag.z+1)*zy_offset;
