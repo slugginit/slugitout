@@ -266,28 +266,37 @@ package {
 				//x face
 				var placingQuadFront:Quad = new Quad(Constant.BLOCK_WIDTH, -Constant.BLOCK_WIDTH, placeable ? Color.GREEN : Color.RED);
 				placingQuadFront.x = Constant.SUITCASE_OFFSET[orientation.y].x + (p.x)*Constant.BLOCK_WIDTH;
-				placingQuadFront.y = Constant.SUITCASE_OFFSET[orientation.y].y - (p.y)*Constant.BLOCK_WIDTH;
+				placingQuadFront.y = Constant.SUITCASE_OFFSET[orientation.y].y - p.y*Constant.BLOCK_WIDTH - Math.sin(Math.PI/24)*Constant.BLOCK_WIDTH*p.x;
+				placingQuadFront.skewY = -Math.PI/24;
 				if (rotatedBag.z < 0) {
 					placingQuadFront.x -= zx_offset*(rotatedBag.z+1);
 					placingQuadFront.y -= zy_offset*(rotatedBag.z+1);
 				}
+				if(rotatedBag.x < 0) placingQuadFront.y += Math.sin(Math.PI/24)*Constant.BLOCK_WIDTH;
 				placingQuadFront.alpha = 0.25;
 				this.addChild(placingQuadFront);
 				
 				//y face
-				var placingQuadTop:Quad = new Quad(Constant.BLOCK_WIDTH, -Constant.BLOCK_WIDTH*.5, placeable ? Color.GREEN : Color.RED);
+				var placingQuadTop:Quad = new Quad(Constant.BLOCK_WIDTH, -Constant.BLOCK_WIDTH*.615, placeable ? Color.GREEN : Color.RED);
 				placingQuadTop.x = Constant.SUITCASE_OFFSET[orientation.y].x + (p.x)*Constant.BLOCK_WIDTH - zx_offset*(p.z);
-				placingQuadTop.y = Constant.SUITCASE_OFFSET[orientation.y].y - (size.y)*Constant.BLOCK_WIDTH - zy_offset*(p.z);
-				placingQuadTop.skewX = -(Math.PI/2 - Constant.ISOMETRIC_ANGLE);
+				placingQuadTop.y = Constant.SUITCASE_OFFSET[orientation.y].y - (size.y)*Constant.BLOCK_WIDTH - zy_offset*(p.z) - Math.sin(Math.PI/24)*Constant.BLOCK_WIDTH*p.x;
+				if(rotatedBag.x < 0) {
+					placingQuadTop.y += Math.sin(Math.PI/24)*Constant.BLOCK_WIDTH;
+				}
+				placingQuadTop.skewX = -Math.PI/4;
+				placingQuadTop.skewY = -Math.PI/24;
 				placingQuadTop.alpha = 0.25;
 				this.addChild(placingQuadTop);
 				
 				//z face
-				var placingQuadLeft:Quad = new Quad(-Constant.BLOCK_WIDTH*.5, -Constant.BLOCK_WIDTH, placeable ? Color.GREEN : Color.RED);
+				var placingQuadLeft:Quad = new Quad(-Constant.BLOCK_WIDTH*.615, -Constant.BLOCK_WIDTH, placeable ? Color.GREEN : Color.RED);
 				placingQuadLeft.x = Constant.SUITCASE_OFFSET[orientation.y].x - zx_offset*(p.z);
 				placingQuadLeft.y = Constant.SUITCASE_OFFSET[orientation.y].y - (p.y)*Constant.BLOCK_WIDTH - zy_offset*(p.z);
-				if (rotatedBag.x < 0) placingQuadLeft.x += (rotatedBag.x+1)*Constant.BLOCK_WIDTH;
-				placingQuadLeft.skewY =  Constant.ISOMETRIC_ANGLE;
+				if (rotatedBag.x < 0) { 
+					placingQuadLeft.x += (rotatedBag.x+1)*Constant.BLOCK_WIDTH;
+					placingQuadLeft.y -= Math.sin(Math.PI/24)*Constant.BLOCK_WIDTH*rotatedBag.x;
+				}
+				placingQuadLeft.skewY =  Math.PI/4;
 				placingQuadLeft.alpha = .25;
 				this.addChild(placingQuadLeft);
 				
@@ -302,25 +311,39 @@ package {
 				var placeable:Boolean = item.positionedSkeleton[x].placeable;
 				
 				//x face
-				var placingQuadFront:Quad = new Quad(Constant.BLOCK_WIDTH, -Constant.BLOCK_WIDTH, Color.GRAY);
+				var placingQuadFront:Quad = new Quad(Constant.BLOCK_WIDTH, -Constant.BLOCK_WIDTH, placeable ? Color.GREEN : Color.RED);
 				placingQuadFront.x = Constant.SUITCASE_OFFSET[orientation.y].x + (p.x)*Constant.BLOCK_WIDTH;
-				placingQuadFront.y = Constant.SUITCASE_OFFSET[orientation.y].y - (p.y)*Constant.BLOCK_WIDTH;
+				placingQuadFront.y = Constant.SUITCASE_OFFSET[orientation.y].y - p.y*Constant.BLOCK_WIDTH - Math.sin(Math.PI/24)*Constant.BLOCK_WIDTH*p.x;
+				placingQuadFront.skewY = -Math.PI/24;
+				if (rotatedBag.z < 0) {
+					placingQuadFront.x -= zx_offset*(rotatedBag.z+1);
+					placingQuadFront.y -= zy_offset*(rotatedBag.z+1);
+				}
+				if(rotatedBag.x < 0) placingQuadFront.y += Math.sin(Math.PI/24)*Constant.BLOCK_WIDTH;
 				placingQuadFront.alpha = 0.25;
 				this.addChild(placingQuadFront);
 				
 				//y face
-				var placingQuadTop:Quad = new Quad(Constant.BLOCK_WIDTH, -Constant.BLOCK_WIDTH*.5,  Color.GRAY);
+				var placingQuadTop:Quad = new Quad(Constant.BLOCK_WIDTH, -Constant.BLOCK_WIDTH*.615, placeable ? Color.GREEN : Color.RED);
 				placingQuadTop.x = Constant.SUITCASE_OFFSET[orientation.y].x + (p.x)*Constant.BLOCK_WIDTH - zx_offset*(p.z);
-				placingQuadTop.y = Constant.SUITCASE_OFFSET[orientation.y].y - (size.y)*Constant.BLOCK_WIDTH - zy_offset*(p.z);
-				placingQuadTop.skewX = -(Math.PI/2 - Constant.ISOMETRIC_ANGLE);
+				placingQuadTop.y = Constant.SUITCASE_OFFSET[orientation.y].y - (size.y)*Constant.BLOCK_WIDTH - zy_offset*(p.z) - Math.sin(Math.PI/24)*Constant.BLOCK_WIDTH*p.x;
+				if(rotatedBag.x < 0) {
+					placingQuadTop.y += Math.sin(Math.PI/24)*Constant.BLOCK_WIDTH;
+				}
+				placingQuadTop.skewX = -Math.PI/4;
+				placingQuadTop.skewY = -Math.PI/24;
 				placingQuadTop.alpha = 0.25;
 				this.addChild(placingQuadTop);
 				
 				//z face
-				var placingQuadLeft:Quad = new Quad(-Constant.BLOCK_WIDTH*.5, -Constant.BLOCK_WIDTH,  Color.GRAY);
+				var placingQuadLeft:Quad = new Quad(-Constant.BLOCK_WIDTH*.615, -Constant.BLOCK_WIDTH, placeable ? Color.GREEN : Color.RED);
 				placingQuadLeft.x = Constant.SUITCASE_OFFSET[orientation.y].x - zx_offset*(p.z);
 				placingQuadLeft.y = Constant.SUITCASE_OFFSET[orientation.y].y - (p.y)*Constant.BLOCK_WIDTH - zy_offset*(p.z);
-				placingQuadLeft.skewY =  Constant.ISOMETRIC_ANGLE;
+				if (rotatedBag.x < 0) { 
+					placingQuadLeft.x += (rotatedBag.x+1)*Constant.BLOCK_WIDTH;
+					placingQuadLeft.y -= Math.sin(Math.PI/24)*Constant.BLOCK_WIDTH*rotatedBag.x;
+				}
+				placingQuadLeft.skewY =  Math.PI/4;
 				placingQuadLeft.alpha = .25;
 				this.addChild(placingQuadLeft);
 				
@@ -337,9 +360,9 @@ package {
 			
 			//rotate all the items while we're at it
 			for (var i:int = 0; i < placedItems.length; i++)
-				placedItems[i].rotateItem(new Point(0, -cameraOffset*Math.PI/2, 0));
+				placedItems[i].rotateItem(new Point(0, cameraOffset*Math.PI/2, 0));
 			if (queuedItems.length > 0)
-				queuedItems[item_index].rotateItem(new Point(0, -cameraOffset*Math.PI/2, 0));
+				queuedItems[item_index].rotateItem(new Point(0, cameraOffset*Math.PI/2, 0));
 							
 		}
 		

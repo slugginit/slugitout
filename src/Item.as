@@ -120,8 +120,9 @@ package {
 				//trace("Rotating " + positionedSkeleton[x].point + " to " + p + " camera rotation: " + cameraRotation);
 				var placeable:Boolean = positionedSkeleton[x].placeable;
 				
-				//x face
+				//x faced
 				var placingQuadFront:Quad = new Quad(Constant.BLOCK_WIDTH, -Constant.BLOCK_WIDTH, color);
+				placingQuadFront.skewX = -Math.PI/24;
 				placingQuadFront.x = Constant.SUITCASE_OFFSET[cameraRotation].x + p.x*Constant.BLOCK_WIDTH - Constant.ZX_OFFSET*p.z;
 				placingQuadFront.y = Constant.SUITCASE_OFFSET[cameraRotation].y - p.y*Constant.BLOCK_WIDTH - Constant.ZY_OFFSET*p.z;
 				placingQuadFront.alpha = 0.25;
@@ -145,13 +146,6 @@ package {
 			}
 			
 			
-			
-			//trace("Drawing item: position - " + position.toString() + " orientation - " + orientation.toString());
-			/*
-			for (var i:int; i < faces.length; i++) {
-				faces[i].drawFace(cameraOffset,orientation, position, placed);
-				this.addChild(faces[i]);
-			}*/
 		}
 
 		public function rotateItem(rotPoint:Point):void {
