@@ -298,53 +298,53 @@ package
 		[Embed(source="../media/graphics/bottle/waterbottle_PH_024.png")]
 		public static const bottle23:Class;
 		
-		[Embed(source="../media/graphics/camera/camera000.png")]
+		[Embed(source="../media/graphics/camera/camera_PH_001.png")]
 		public static const camera0:Class;
-		[Embed(source="../media/graphics/camera/camera001.png")]
+		[Embed(source="../media/graphics/camera/camera_PH_002.png")]
 		public static const camera1:Class;
-		[Embed(source="../media/graphics/camera/camera002.png")]
+		[Embed(source="../media/graphics/camera/camera_PH_003.png")]
 		public static const camera2:Class;
-		[Embed(source="../media/graphics/camera/camera003.png")]
+		[Embed(source="../media/graphics/camera/camera_PH_004.png")]
 		public static const camera3:Class;
-		[Embed(source="../media/graphics/camera/camera004.png")]
+		[Embed(source="../media/graphics/camera/camera_PH_005.png")]
 		public static const camera4:Class;
-		[Embed(source="../media/graphics/camera/camera005.png")]
+		[Embed(source="../media/graphics/camera/camera_PH_006.png")]
 		public static const camera5:Class;
-		[Embed(source="../media/graphics/camera/camera006.png")]
+		[Embed(source="../media/graphics/camera/camera_PH_007.png")]
 		public static const camera6:Class;
-		[Embed(source="../media/graphics/camera/camera007.png")]
+		[Embed(source="../media/graphics/camera/camera_PH_008.png")]
 		public static const camera7:Class;
-		[Embed(source="../media/graphics/camera/camera008.png")]
+		[Embed(source="../media/graphics/camera/camera_PH_009.png")]
 		public static const camera8:Class;
-		[Embed(source="../media/graphics/camera/camera009.png")]
+		[Embed(source="../media/graphics/camera/camera_PH_010.png")]
 		public static const camera9:Class;
-		[Embed(source="../media/graphics/camera/camera010.png")]
+		[Embed(source="../media/graphics/camera/camera_PH_011.png")]
 		public static const camera10:Class;
-		[Embed(source="../media/graphics/camera/camera011.png")]
+		[Embed(source="../media/graphics/camera/camera_PH_012.png")]
 		public static const camera11:Class;
-		[Embed(source="../media/graphics/camera/camera012.png")]
+		[Embed(source="../media/graphics/camera/camera_PH_013.png")]
 		public static const camera12:Class;
-		[Embed(source="../media/graphics/camera/camera013.png")]
+		[Embed(source="../media/graphics/camera/camera_PH_014.png")]
 		public static const camera13:Class;
-		[Embed(source="../media/graphics/camera/camera014.png")]
+		[Embed(source="../media/graphics/camera/camera_PH_015.png")]
 		public static const camera14:Class;
-		[Embed(source="../media/graphics/camera/camera015.png")]
+		[Embed(source="../media/graphics/camera/camera_PH_016.png")]
 		public static const camera15:Class;
-		[Embed(source="../media/graphics/camera/camera016.png")]
+		[Embed(source="../media/graphics/camera/camera_PH_017.png")]
 		public static const camera16:Class;
-		[Embed(source="../media/graphics/camera/camera017.png")]
+		[Embed(source="../media/graphics/camera/camera_PH_018.png")]
 		public static const camera17:Class;
-		[Embed(source="../media/graphics/camera/camera018.png")]
+		[Embed(source="../media/graphics/camera/camera_PH_019.png")]
 		public static const camera18:Class;
-		[Embed(source="../media/graphics/camera/camera019.png")]
+		[Embed(source="../media/graphics/camera/camera_PH_020.png")]
 		public static const camera19:Class;
-		[Embed(source="../media/graphics/camera/camera020.png")]
+		[Embed(source="../media/graphics/camera/camera_PH_021.png")]
 		public static const camera20:Class;
-		[Embed(source="../media/graphics/camera/camera021.png")]
+		[Embed(source="../media/graphics/camera/camera_PH_022.png")]
 		public static const camera21:Class;
-		[Embed(source="../media/graphics/camera/camera022.png")]
+		[Embed(source="../media/graphics/camera/camera_PH_023.png")]
 		public static const camera22:Class;
-		[Embed(source="../media/graphics/camera/camera023.png")]
+		[Embed(source="../media/graphics/camera/camera_PH_024.png")]
 		public static const camera23:Class;
 		
 		[Embed(source="../media/graphics/doll/animething_PL_001.png")]

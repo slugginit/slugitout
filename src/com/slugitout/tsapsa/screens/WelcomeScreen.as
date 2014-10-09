@@ -79,8 +79,7 @@ package com.slugitout.tsapsa.screens
 			//suitcase.addItemtoQueue("../templates/Cube1.txt", "sock");
 			//suitcase.addItemtoQueue("../templates/Cube1.txt", "sock");
 			//suitcase.addItemtoQueue("../templates/Noodle.txt", "noodle");
-			suitcase.addFirstItem("../templates/camera.txt", "camera", _dispatcher);
-			suitcase.addItemtoQueue("../templates/boot.txt", "boot");
+			suitcase.addFirstItem("../templates/boot.txt", "boot", _dispatcher);
 			suitcase.addItemtoQueue("../templates/bottle.txt", "bottle");
 			suitcase.addItemtoQueue("../templates/camera.txt", "camera");
 			suitcase.addItemtoQueue("../templates/doll.txt", "doll");
@@ -218,11 +217,60 @@ package com.slugitout.tsapsa.screens
 			
 		}
 			private function onAboutBackClick(event:Event):void
-		{			
+		{
+			//if (!Sounds.muted) Sounds.sndCoffee.play();
+			
 			initialize();
 		}
 		
 		
+		/**
+		 * On play button click. 
+		 * @param event
+		 * 
+		 */
+		/*private function onPlayClick(event:Event):void
+		{
+			this.dispatchEvent(new NavigationEvent(NavigationEvent.CHANGE_SCREEN, {id: "play"}, true));
+			
+			if (!Sounds.muted) Sounds.sndCoffee.play();
+		}
+		
+		/**
+		 * On about button click. 
+		 * @param event
+		 * 
+		 */
+		/*private function onAboutClick(event:Event):void
+		{
+			if (!Sounds.muted) Sounds.sndMushroom.play();
+			showAbout();
+		}
+		
+		/**
+		 
+		 * Show about screen. 
+		 
+		 * 
+		 
+		 */
+		/*
+		public function showAbout():void
+			
+		{
+			
+			screenMode = "about";
+			
+			hero.visible = false;
+			playBtn.visible = false;
+			aboutBtn.visible = false;
+			
+			aboutText.visible = true;
+			hsharmaBtn.visible = true;
+			starlingBtn.visible = true;
+			backBtn.visible = true;
+			
+		}
 		
 		/**
 		 * Initialize welcome screen. 
