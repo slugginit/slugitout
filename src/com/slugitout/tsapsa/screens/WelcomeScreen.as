@@ -79,7 +79,11 @@ package com.slugitout.tsapsa.screens
 			//suitcase.addItemtoQueue("../templates/Cube1.txt", "sock");
 			//suitcase.addItemtoQueue("../templates/Cube1.txt", "sock");
 			//suitcase.addItemtoQueue("../templates/Noodle.txt", "noodle");
+<<<<<<< HEAD
 			suitcase.addItemtoQueue("../templates/boot.txt", "boot");
+=======
+			suitcase.addFirstItem("../templates/boot.txt", "boot", _dispatcher);
+>>>>>>> parent of f9cc974... Rendering stuff updated
 			suitcase.addItemtoQueue("../templates/bottle.txt", "bottle");
 			suitcase.addItemtoQueue("../templates/camera.txt", "camera");
 			suitcase.addItemtoQueue("../templates/doll.txt", "doll");
