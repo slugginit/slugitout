@@ -75,11 +75,11 @@ package com.slugitout.tsapsa.screens
 		private function initItems():void {
 			var _dispatcher:EventDispatcher = new EventDispatcher();
 			_dispatcher.addEventListener("Loaded", drawScreen);
-			//suitcase.addFirstItem("../templates/Noodle.txt", "noodle", _dispatcher);
+			suitcase.addFirstItem("../templates/Noodle.txt", "noodle", _dispatcher);
 			//suitcase.addItemtoQueue("../templates/Cube1.txt", "sock");
 			//suitcase.addItemtoQueue("../templates/Cube1.txt", "sock");
 			//suitcase.addItemtoQueue("../templates/Noodle.txt", "noodle");
-			suitcase.addFirstItem("../templates/boot.txt", "boot", _dispatcher);
+			suitcase.addItemtoQueue("../templates/boot.txt", "boot");
 			suitcase.addItemtoQueue("../templates/bottle.txt", "bottle");
 			suitcase.addItemtoQueue("../templates/camera.txt", "camera");
 			suitcase.addItemtoQueue("../templates/doll.txt", "doll");
