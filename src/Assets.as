@@ -34,8 +34,16 @@ package
 		 */
 		[Embed(source="../media/graphics/tsa.png")]
 		public static const TSAWorker:Class;
-		[Embed(source="../media/graphics/randomflag.png")]
-		public static const flag:Class;
+		[Embed(source="../media/graphics/play.png")]
+		public static const play:Class;
+		[Embed(source="../media/graphics/continue.png")]
+		public static const cont:Class;
+		[Embed(source="../media/graphics/back.png")]
+		public static const backbtn:Class;
+		[Embed(source="../media/graphics/help.png")]
+		public static const helpbtn:Class;
+		[Embed(source="../media/graphics/quit.png")]
+		public static const quitbtn:Class;
 		
 		/*[Embed(source="../media/graphics/mySpritesheet.xml", mimeType="application/octet-stream")]
 		public static const AtlasXmlGame:Class;

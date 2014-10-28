@@ -4,7 +4,10 @@ package {
 	import display.DisplayQueue;
 	
 	import flash.events.EventDispatcher;
+	import flash.net.SharedObject;
 	import flash.net.dns.AAAARecord;
+	
+	import flashx.textLayout.formats.Float;
 	
 	import starling.display.Quad;
 	import starling.display.Sprite;
@@ -21,21 +24,27 @@ package {
 		private var rotatedBag:IntPoint;
 		
 		public var contents:Array;
+		private var saveArray:Array=new Array();
+		private var nameArray:Array=new Array();
+		private var imgarray:Array=new Array();
 		private var placedItems:Vector.<Item> = new Vector.<Item>();
 		private var queuedItems:Vector.<Item> = new Vector.<Item>();
 		private var item_index:int = 0;
 		
-		private var zx_offset: Number = Math.cos(Constant.ISOMETRIC_ANGLE)*Constant.BLOCK_WIDTH*.5;
-		private var zy_offset: Number = Math.sin(Constant.ISOMETRIC_ANGLE)*Constant.BLOCK_WIDTH*.5;
+		private var z_scale: Number = .615;
+		
+		private var zx_offset: Number = Math.cos(Math.PI/4)*Constant.BLOCK_WIDTH*z_scale;
+		private var zy_offset: Number = Math.sin(Math.PI/4)*Constant.BLOCK_WIDTH*z_scale;
 		
 		public var done:Boolean = false;
 		
-		
 		private var displayQueue:DisplayQueue = new DisplayQueue();
+		
+		private var saveFile:SharedObject=SharedObject.getLocal("save1");
 		
 		public function Suitcase(size:IntPoint) {
 			Constant.SUITCASE_OFFSET = new Array(4);
-			Constant.SUITCASE_OFFSET[0] = new IntPoint(500, 600, 0);
+			Constant.SUITCASE_OFFSET[0] = new IntPoint(500, 700, 0);
 			Constant.SUITCASE_OFFSET[1] = new IntPoint(400, 500, 0);
 			Constant.SUITCASE_OFFSET[2] = new IntPoint(900, 500, 0);
 			Constant.SUITCASE_OFFSET[3] = new IntPoint(900, 600, 0);
@@ -55,6 +64,7 @@ package {
 			}
 			
 			placedItems = new Vector.<Item>();
+			//saveFile.clear();
 		}
 		
 		public function addFirstItem(filename:String, prefix:String, dispatcher:EventDispatcher):void {
@@ -78,30 +88,57 @@ package {
 		
 		public function placeItem():Boolean {
 			var item:Item = queuedItems[item_index];
+			var array1:Array=new Array();
+			var posarray:Array=new Array();
+			var oriarray:Array=new Array();
+			if(this.saved()){
+				saveArray=saveFile.data.placed;
+				posarray=saveFile.data.position;
+				oriarray=saveFile.data.orientation;
+			}
 			//if the item can't be placed don't place it
 			if (!item.placeable) return false;
 				
-			//fill in blocks contained by faces
+			//fill in blocks containe'd by faces
 			for (var i :int = 0; i < item.positionedSkeleton.length; i++) {
 				//rotate point by current rotation and place it
 				var p:IntPoint = item.positionedSkeleton[i].point;
+				var array2:Array=new Array();
 				trace("Placing item at " + p.toString());
 				contents[p.x][p.y][p.z] = true;
+				//saving positioned skeleton to arrays
+				array2.push(p.x);
+				array2.push(p.y);
+				array2.push(p.z);
+				array1.push(array2);
 			}
-			
 			//add item to plced and remove it from queued
 			item.placed = true;
-			placedItems.push(item);	
+			placedItems.push(item);
 			queuedItems.splice(item_index, 1);
-			
 			cycleQueuedItem(0);
 			if (queuedItems.length == 0) {
 				done = true;
+				saveFile.clear();
+				saveFile.data.saved=false;
+				saveFile.flush();
 				return true;
 			}
+			saveArray.push(array1);
+			saveFile.data.placed=saveArray;
+			//save position and orientation for sprite drawing?
+			posarray.push(item.position.x,item.position.y,item.position.z);
+			oriarray.push(item.orientation.x,item.position.y,item.position.z);
+			saveFile.data.position=posarray;
+			saveFile.data.orientation=oriarray;
+			imgarray.push(item.getImage());
+			saveFile.data.image=imgarray;
+			nameArray.push(item.getPrefix());
+			saveFile.data.names=nameArray;
+			saveFile.data.saved=true;
+			saveFile.flush();
 			addChild(queuedItems[item_index]);
 			drawItem(queuedItems[item_index]);
-			
 			return true;
 		}
 		
@@ -125,24 +162,37 @@ package {
 			
 			//draw guidelines
 			//trace("Rotated bag: " + rotatedBag.toString() + " rotation: " + orientation.y);
+			var left_offset:Number = Math.sin(Math.PI/4)*(Constant.BLOCK_WIDTH*.615);
+			var baseQuad:Quad = new Quad(10, 10, Color.YELLOW);
+			baseQuad.x = Constant.SUITCASE_OFFSET[orientation.y].x;
+			baseQuad.y = Constant.SUITCASE_OFFSET[orientation.y].y;
+			this.addChild(baseQuad);
+			
+			trace("Rotated bag: " + rotatedBag.toString());
 			for (var i:int = 0; i < size.y; i++) {
 				//front face horizontal lines
-				var frontQuad:Quad = new Quad(Constant.BLOCK_WIDTH*(rotatedBag.x), 1, Color.WHITE);
+				var frontQuad:Quad = new Quad(Constant.BLOCK_WIDTH*(rotatedBag.x), 1, Color.GREEN);
+				frontQuad.rotation = -Math.PI/24.0;
 				frontQuad.x = Constant.SUITCASE_OFFSET[orientation.y].x;
 				frontQuad.y = Constant.SUITCASE_OFFSET[orientation.y].y - i*Constant.BLOCK_WIDTH;
 				if (rotatedBag.z < 0) {
 					frontQuad.x -= (rotatedBag.z+1)*zx_offset;
 					frontQuad.y -= (rotatedBag.z+1)*zy_offset;
 				}
-				if (rotatedBag.x < 0) frontQuad.x += Constant.BLOCK_WIDTH;
+				if (rotatedBag.x < 0) {
+					frontQuad.x += Constant.BLOCK_WIDTH;
+				}
 				this.addChild(frontQuad);
 				
 				//left face horizontal lines
-				var leftQuad:Quad = new Quad(Constant.BLOCK_WIDTH*rotatedBag.z*.5, 1, Color.WHITE);
-				leftQuad.rotation = Math.PI + Constant.ISOMETRIC_ANGLE;
+				var leftQuad:Quad = new Quad(Constant.BLOCK_WIDTH*rotatedBag.z*.615, 1, Color.WHITE);
+				leftQuad.rotation = -Math.PI*3/4;
 				leftQuad.x = Constant.SUITCASE_OFFSET[orientation.y].x;
-				if (rotatedBag.x < 0) leftQuad.x += (rotatedBag.x+1)*Constant.BLOCK_WIDTH;
 				leftQuad.y = Constant.SUITCASE_OFFSET[orientation.y].y - i*Constant.BLOCK_WIDTH;
+				if (rotatedBag.x < 0) {
+					leftQuad.x += (rotatedBag.x+1)*Constant.BLOCK_WIDTH;
+					leftQuad.y += Math.sin(-Math.PI/24)*Constant.BLOCK_WIDTH*(rotatedBag.x);
+				}
 				if (rotatedBag.z < 0) {
 					leftQuad.x -= zx_offset;
 					leftQuad.y -= zy_offset;
@@ -150,26 +200,35 @@ package {
 				this.addChild(leftQuad);
 			}
 			
+			var horizontal_offset:Number = Math.tan(Math.PI/24)*Constant.BLOCK_WIDTH;
+			var y_offset:Number = Math.sin(-Math.PI/4)*Constant.BLOCK_WIDTH*rotatedBag.z;
+			
 			for (var k:int = 0; k <= Math.abs(rotatedBag.x); k++) {
 				//front face vertical lines
-				var vertQuad:Quad = new Quad(Constant.BLOCK_WIDTH*(size.y), 1, Color.WHITE);
-				vertQuad.rotation = Math.PI/2;
+				var vertQuad:Quad = new Quad(Constant.BLOCK_WIDTH*(size.y), 1, Color.GREEN);
+				vertQuad.rotation = -Math.PI/2;
 				vertQuad.x = Constant.SUITCASE_OFFSET[orientation.y].x + k*Constant.BLOCK_WIDTH;
-				vertQuad.y = Constant.SUITCASE_OFFSET[orientation.y].y - (rotatedBag.y)*Constant.BLOCK_WIDTH;
+				vertQuad.y = Constant.SUITCASE_OFFSET[orientation.y].y - horizontal_offset*k;
 				if (rotatedBag.z < 0) {
 					vertQuad.x -= (rotatedBag.z+1)*zx_offset;
 					vertQuad.y -= (rotatedBag.z+1)*zy_offset;
 				}
-				if (rotatedBag.x < 0) vertQuad.x += (rotatedBag.x+1)*Constant.BLOCK_WIDTH;
+				if (rotatedBag.x < 0) {
+					vertQuad.x += (rotatedBag.x+1)*Constant.BLOCK_WIDTH;
+					vertQuad.y += (rotatedBag.x)*Math.sin(-Math.PI/24)*Constant.BLOCK_WIDTH;
+				}
 				this.addChild(vertQuad);
 				
 				
 				//top face vertical lines
-				var topQuad:Quad = new Quad(Constant.BLOCK_WIDTH*(rotatedBag.z)*.5, 1, Color.WHITE);
-				topQuad.rotation = Math.PI + Constant.ISOMETRIC_ANGLE;
+				var topQuad:Quad = new Quad(Constant.BLOCK_WIDTH*(rotatedBag.z)*.615, 1, Color.PURPLE);
+				topQuad.rotation = -Math.PI*3/4;
 				topQuad.x = Constant.SUITCASE_OFFSET[orientation.y].x + k*Constant.BLOCK_WIDTH;
-				if (rotatedBag.x < 0) topQuad.x += (rotatedBag.x+1)*Constant.BLOCK_WIDTH;
-				topQuad.y = Constant.SUITCASE_OFFSET[orientation.y].y - (rotatedBag.y)*Constant.BLOCK_WIDTH;
+				topQuad.y = Constant.SUITCASE_OFFSET[orientation.y].y - (rotatedBag.y)*Constant.BLOCK_WIDTH - horizontal_offset*k;
+				if (rotatedBag.x < 0) { 
+					topQuad.x += (rotatedBag.x+1)*Constant.BLOCK_WIDTH; //(rotatedBag.x+1)*Constant.BLOCK_WIDTH;
+					topQuad.y += Math.sin(-Math.PI/24)*Constant.BLOCK_WIDTH*rotatedBag.x;
+				}
 				if (rotatedBag.z < 0) {
 					topQuad.x -= zx_offset;
 					topQuad.y -= zy_offset;
@@ -179,10 +238,11 @@ package {
 			
 			for (var j:int = 0; j <= Math.abs(rotatedBag.z); j++) {
 				//top face horizontal lines
-				var topZQuad:Quad = new Quad(Constant.BLOCK_WIDTH*(rotatedBag.x), 1, Color.WHITE);
+				var topZQuad:Quad = new Quad(Constant.BLOCK_WIDTH*(rotatedBag.x), 1, Color.PURPLE);
+				topZQuad.rotation = -Math.PI/24.0;
 				topZQuad.x = Constant.SUITCASE_OFFSET[orientation.y].x - zx_offset*j;
 				if (rotatedBag.x < 0) topZQuad.x += Constant.BLOCK_WIDTH;
-				topZQuad.y = Constant.SUITCASE_OFFSET[orientation.y].y - zy_offset*j - (rotatedBag.y)*Constant.BLOCK_WIDTH;
+				topZQuad.y = Constant.SUITCASE_OFFSET[orientation.y].y /*- zy_offset*j*/ - left_offset*j - (rotatedBag.y)*Constant.BLOCK_WIDTH;
 				if (rotatedBag.z < 0) {
 					topZQuad.x -= (rotatedBag.z+1)*zx_offset;
 					topZQuad.y -= (rotatedBag.z+1)*zy_offset;
@@ -193,9 +253,12 @@ package {
 				//left face vertical lines
 				var leftZQuad:Quad = new Quad(Constant.BLOCK_WIDTH*(size.y), 1, Color.WHITE);
 				leftZQuad.rotation = Math.PI/2;
-				leftZQuad.x = Constant.SUITCASE_OFFSET[orientation.y].x - zx_offset*j;
-				if (rotatedBag.x < 0) leftZQuad.x += (rotatedBag.x+1)*Constant.BLOCK_WIDTH;
-				leftZQuad.y = Constant.SUITCASE_OFFSET[orientation.y].y - zy_offset*j - (size.y)*Constant.BLOCK_WIDTH;
+				leftZQuad.x = Constant.SUITCASE_OFFSET[orientation.y].x /*- zx_offset*j */- left_offset*j;
+				leftZQuad.y = Constant.SUITCASE_OFFSET[orientation.y].y - /*zy_offset*j -*/ (size.y)*Constant.BLOCK_WIDTH - left_offset*j;
+				if (rotatedBag.x < 0) {
+					leftZQuad.x += (rotatedBag.x+1)*Constant.BLOCK_WIDTH;
+					leftZQuad.y += (rotatedBag.x)*Math.sin(-Math.PI/24)*Constant.BLOCK_WIDTH;
+				}
 				if (rotatedBag.z < 0) {
 					leftZQuad.x -= (rotatedBag.z+1)*zx_offset;
 					leftZQuad.y -= (rotatedBag.z+1)*zy_offset;
@@ -232,28 +295,37 @@ package {
 				//x face
 				var placingQuadFront:Quad = new Quad(Constant.BLOCK_WIDTH, -Constant.BLOCK_WIDTH, placeable ? Color.GREEN : Color.RED);
 				placingQuadFront.x = Constant.SUITCASE_OFFSET[orientation.y].x + (p.x)*Constant.BLOCK_WIDTH;
-				placingQuadFront.y = Constant.SUITCASE_OFFSET[orientation.y].y - (p.y)*Constant.BLOCK_WIDTH;
+				placingQuadFront.y = Constant.SUITCASE_OFFSET[orientation.y].y - p.y*Constant.BLOCK_WIDTH - Math.sin(Math.PI/24)*Constant.BLOCK_WIDTH*p.x;
+				placingQuadFront.skewY = -Math.PI/24;
 				if (rotatedBag.z < 0) {
 					placingQuadFront.x -= zx_offset*(rotatedBag.z+1);
 					placingQuadFront.y -= zy_offset*(rotatedBag.z+1);
 				}
+				if(rotatedBag.x < 0) placingQuadFront.y += Math.sin(Math.PI/24)*Constant.BLOCK_WIDTH;
 				placingQuadFront.alpha = 0.25;
 				this.addChild(placingQuadFront);
 				
 				//y face
-				var placingQuadTop:Quad = new Quad(Constant.BLOCK_WIDTH, -Constant.BLOCK_WIDTH*.5, placeable ? Color.GREEN : Color.RED);
+				var placingQuadTop:Quad = new Quad(Constant.BLOCK_WIDTH, -Constant.BLOCK_WIDTH*.615, placeable ? Color.GREEN : Color.RED);
 				placingQuadTop.x = Constant.SUITCASE_OFFSET[orientation.y].x + (p.x)*Constant.BLOCK_WIDTH - zx_offset*(p.z);
-				placingQuadTop.y = Constant.SUITCASE_OFFSET[orientation.y].y - (size.y)*Constant.BLOCK_WIDTH - zy_offset*(p.z);
-				placingQuadTop.skewX = -(Math.PI/2 - Constant.ISOMETRIC_ANGLE);
+				placingQuadTop.y = Constant.SUITCASE_OFFSET[orientation.y].y - (size.y)*Constant.BLOCK_WIDTH - zy_offset*(p.z) - Math.sin(Math.PI/24)*Constant.BLOCK_WIDTH*p.x;
+				if(rotatedBag.x < 0) {
+					placingQuadTop.y += Math.sin(Math.PI/24)*Constant.BLOCK_WIDTH;
+				}
+				placingQuadTop.skewX = -Math.PI/4;
+				placingQuadTop.skewY = -Math.PI/24;
 				placingQuadTop.alpha = 0.25;
 				this.addChild(placingQuadTop);
 				
 				//z face
-				var placingQuadLeft:Quad = new Quad(-Constant.BLOCK_WIDTH*.5, -Constant.BLOCK_WIDTH, placeable ? Color.GREEN : Color.RED);
+				var placingQuadLeft:Quad = new Quad(-Constant.BLOCK_WIDTH*.615, -Constant.BLOCK_WIDTH, placeable ? Color.GREEN : Color.RED);
 				placingQuadLeft.x = Constant.SUITCASE_OFFSET[orientation.y].x - zx_offset*(p.z);
 				placingQuadLeft.y = Constant.SUITCASE_OFFSET[orientation.y].y - (p.y)*Constant.BLOCK_WIDTH - zy_offset*(p.z);
-				if (rotatedBag.x < 0) placingQuadLeft.x += (rotatedBag.x+1)*Constant.BLOCK_WIDTH;
-				placingQuadLeft.skewY =  Constant.ISOMETRIC_ANGLE;
+				if (rotatedBag.x < 0) { 
+					placingQuadLeft.x += (rotatedBag.x+1)*Constant.BLOCK_WIDTH;
+					placingQuadLeft.y -= Math.sin(Math.PI/24)*Constant.BLOCK_WIDTH*rotatedBag.x;
+				}
+				placingQuadLeft.skewY =  Math.PI/4;
 				placingQuadLeft.alpha = .25;
 				this.addChild(placingQuadLeft);
 				
@@ -268,25 +340,39 @@ package {
 				var placeable:Boolean = item.positionedSkeleton[x].placeable;
 				
 				//x face
-				var placingQuadFront:Quad = new Quad(Constant.BLOCK_WIDTH, -Constant.BLOCK_WIDTH, Color.GRAY);
+				var placingQuadFront:Quad = new Quad(Constant.BLOCK_WIDTH, -Constant.BLOCK_WIDTH, placeable ? Color.GREEN : Color.RED);
 				placingQuadFront.x = Constant.SUITCASE_OFFSET[orientation.y].x + (p.x)*Constant.BLOCK_WIDTH;
-				placingQuadFront.y = Constant.SUITCASE_OFFSET[orientation.y].y - (p.y)*Constant.BLOCK_WIDTH;
+				placingQuadFront.y = Constant.SUITCASE_OFFSET[orientation.y].y - p.y*Constant.BLOCK_WIDTH - Math.sin(Math.PI/24)*Constant.BLOCK_WIDTH*p.x;
+				placingQuadFront.skewY = -Math.PI/24;
+				if (rotatedBag.z < 0) {
+					placingQuadFront.x -= zx_offset*(rotatedBag.z+1);
+					placingQuadFront.y -= zy_offset*(rotatedBag.z+1);
+				}
+				if(rotatedBag.x < 0) placingQuadFront.y += Math.sin(Math.PI/24)*Constant.BLOCK_WIDTH;
 				placingQuadFront.alpha = 0.25;
 				this.addChild(placingQuadFront);
 				
 				//y face
-				var placingQuadTop:Quad = new Quad(Constant.BLOCK_WIDTH, -Constant.BLOCK_WIDTH*.5,  Color.GRAY);
+				var placingQuadTop:Quad = new Quad(Constant.BLOCK_WIDTH, -Constant.BLOCK_WIDTH*.615, placeable ? Color.GREEN : Color.RED);
 				placingQuadTop.x = Constant.SUITCASE_OFFSET[orientation.y].x + (p.x)*Constant.BLOCK_WIDTH - zx_offset*(p.z);
-				placingQuadTop.y = Constant.SUITCASE_OFFSET[orientation.y].y - (size.y)*Constant.BLOCK_WIDTH - zy_offset*(p.z);
-				placingQuadTop.skewX = -(Math.PI/2 - Constant.ISOMETRIC_ANGLE);
+				placingQuadTop.y = Constant.SUITCASE_OFFSET[orientation.y].y - (size.y)*Constant.BLOCK_WIDTH - zy_offset*(p.z) - Math.sin(Math.PI/24)*Constant.BLOCK_WIDTH*p.x;
+				if(rotatedBag.x < 0) {
+					placingQuadTop.y += Math.sin(Math.PI/24)*Constant.BLOCK_WIDTH;
+				}
+				placingQuadTop.skewX = -Math.PI/4;
+				placingQuadTop.skewY = -Math.PI/24;
 				placingQuadTop.alpha = 0.25;
 				this.addChild(placingQuadTop);
 				
 				//z face
-				var placingQuadLeft:Quad = new Quad(-Constant.BLOCK_WIDTH*.5, -Constant.BLOCK_WIDTH,  Color.GRAY);
+				var placingQuadLeft:Quad = new Quad(-Constant.BLOCK_WIDTH*.615, -Constant.BLOCK_WIDTH, placeable ? Color.GREEN : Color.RED);
 				placingQuadLeft.x = Constant.SUITCASE_OFFSET[orientation.y].x - zx_offset*(p.z);
 				placingQuadLeft.y = Constant.SUITCASE_OFFSET[orientation.y].y - (p.y)*Constant.BLOCK_WIDTH - zy_offset*(p.z);
-				placingQuadLeft.skewY =  Constant.ISOMETRIC_ANGLE;
+				if (rotatedBag.x < 0) { 
+					placingQuadLeft.x += (rotatedBag.x+1)*Constant.BLOCK_WIDTH;
+					placingQuadLeft.y -= Math.sin(Math.PI/24)*Constant.BLOCK_WIDTH*rotatedBag.x;
+				}
+				placingQuadLeft.skewY =  Math.PI/4;
 				placingQuadLeft.alpha = .25;
 				this.addChild(placingQuadLeft);
 				
@@ -296,17 +382,18 @@ package {
 		public function rotateCamera(cameraOffset:Number) : void {
 			orientation.y += (cameraOffset + 4);
 			orientation.y = orientation.y%4;
+			
 			trace("Orientation is " + orientation.y);
 			
 			var cameraMat:Matrix = new Matrix(0, Math.PI*orientation.y/2, 0);
 			rotatedBag = cameraMat.rotateInt(size);
 			
+			
 			//rotate all the items while we're at it
 			for (var i:int = 0; i < placedItems.length; i++)
-				placedItems[i].rotateItem(new Point(0, -cameraOffset*Math.PI/2, 0));
+				placedItems[i].rotateItem(new Point(0, cameraOffset*Math.PI/2, 0));
 			if (queuedItems.length > 0)
-				queuedItems[item_index].rotateItem(new Point(0, -cameraOffset*Math.PI/2, 0));
-							
+				queuedItems[item_index].rotateItem(new Point(0, cameraOffset*Math.PI/2, 0));
 		}
 		
 		public function moveItem(transPoint:IntPoint, rotPoint:Point) :void {
@@ -321,7 +408,6 @@ package {
 			
 			item.position.add(transPoint);
 			trace("New transPoint: " + transPoint + " new position: " + item.position);
-
 			
 			var rotMat:Matrix = new Matrix(rotPoint.x, rotPoint.y, rotPoint.z);
 			
@@ -395,6 +481,63 @@ package {
 			}
 		
 		}
-		
+	
+		public function saved() :Boolean{
+			return saveFile.data.saved;
+		}
+		//check which items need to be loaded
+		public function Loadone() :void{
+			nameArray=saveFile.data.names;
+			var removed:Array=new Array();
+			for(var i:int=0;i<nameArray.length;i++){
+				for(var j:int=0;j<queuedItems.length;j++){
+					if(queuedItems[j].getPrefix()==nameArray[i]){
+						if(j in removed){
+							continue;
+						}
+						removed.push(j);
+						item_index=j;
+						moveItem(new IntPoint(0, 0, 0), new Point(0, 0, 0))
+						Loadtwo(j,i);
+						break;
+					}
+				}
+			}
+			removed.sort();
+			for(var a:int=removed.length;a>0;a--)
+			{
+				queuedItems.splice(removed[a-1], 1);
+			}
+			item_index=0;
+			moveItem(new IntPoint(0, 0, 0), new Point(0, 0, 0))
+			addChild(queuedItems[item_index]);
+			drawItem(queuedItems[item_index]);
+			moveItem(new IntPoint(0, 0, 0), new Point(0, 0, 0))
+		}
+		//load all the item variables
+		public function Loadtwo(i:int,j:int):void{
+			var item:Item = queuedItems[i];
+			var loadArray:Array=new Array();
+			var imagenum:Array=new Array();
+			loadArray=saveFile.data.placed
+			imagenum=saveFile.data.image
+			//item.positionedSkeleton = new Vector.<SkeletonPoint>();
+			for (var k :int = 0; k < item.positionedSkeleton.length; k++) {
+					var p:IntPoint=new IntPoint(loadArray[j][k][0],
+						loadArray[j][k][1],
+						loadArray[j][k][2])
+					item.positionedSkeleton[k].point=p;
+					contents[p.x][p.y][p.z] = true;
+			}
+			item.position.x=saveFile.data.position[3*j+0];
+			item.position.y=saveFile.data.position[3*j+1];
+			item.position.z=saveFile.data.position[3*j+2];
+			item.orientation.x=saveFile.data.orientation[3*j+0];
+			item.orientation.y=saveFile.data.orientation[3*j+1];
+			item.orientation.z=saveFile.data.orientation[3*j+2];
+			item.setImage(imagenum[j]);
+			item.placed = true;
+			placedItems.push(item);
+		}
 	}
 }
