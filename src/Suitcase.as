@@ -64,7 +64,7 @@ package {
 			}
 			
 			placedItems = new Vector.<Item>();
-			//saveFile.clear();
+			saveFile.clear();
 		}
 		
 		public function addFirstItem(filename:String, prefix:String, dispatcher:EventDispatcher):void {

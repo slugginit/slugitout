@@ -15,9 +15,7 @@ package com.slugitout.tsapsa.screens
 	import starling.text.TextField;
 	import starling.utils.HAlign;
 	import starling.utils.VAlign;
-	
-	import utilities.Save;
-	
+
 	public class MenuScreen extends Sprite
 	{
 		/** Background image. */
