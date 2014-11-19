@@ -53,6 +53,27 @@ package {
 			currentSprite = new Image(Assets.getTexture(spritePrefix + imageIndex));
 		}
 		
+		public function copyItemWithDispatcher(dispatcher:EventDispatcher):Item {
+			var newItem:Item = new Item(spritePrefix);
+			newItem.addDispatcher(dispatcher);
+			if (skeleton != null) {
+				newItem.skeleton = new Vector.<IntPoint>();
+				for (var i:int = 0; i < skeleton.length; i++) {
+					newItem.skeleton.push(new IntPoint(skeleton[i].x, skeleton[i].y, skeleton[i].z));
+				}
+				newItem.initialized = true;	
+			}
+			else {
+				newItem.loadFile("../templates/" + spritePrefix + ".txt");
+			}
+			newItem.position = position.copy();
+			newItem.orientation = orientation.copy();
+			newItem.spritePrefix = spritePrefix;
+			newItem.currentSprite = new Image(Assets.getTexture(spritePrefix + imageIndex));
+			
+			return newItem;
+		}
+		
 		public function copyItem():Item {
 			var newItem:Item = new Item(spritePrefix);
 			if (skeleton != null) {

@@ -1,4 +1,5 @@
 package utilities {
+	import flash.events.EventDispatcher;
 
 	public class Structure {
 		public var size:IntPoint;
@@ -27,6 +28,19 @@ package utilities {
 					contents[i].skeleton[k] = p;
 				}
 			}*/
+		}
+		
+		public function unloadObjectsWithDispatcher(_dispatcher:EventDispatcher) {
+			var copiedItems:Vector.<Item> = new Vector.<Item>();
+			var item:Item = contents[0].copyItemWithDispatcher(_dispatcher);
+			copiedItems.push(item);
+			
+			for (var i:int = 1; i < contents.length; i++) {
+				var item:Item = contents[i].copyItem();
+				//item.position.add(position);
+				copiedItems.push(item);
+			}
+			return copiedItems;
 		}
 		
 		public function unloadObjects(position:IntPoint):Vector.<Item> {

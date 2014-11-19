@@ -47,6 +47,7 @@ package com.slugitout.tsapsa.screens
 		
 		private var cameraAngle:Number = 0;
 		private var loaded:Boolean = false;
+		private var _dispatcher:EventDispatcher = new EventDispatcher();
 		
 		/** Game title. */
 		//private var title:Image;
@@ -68,12 +69,20 @@ package com.slugitout.tsapsa.screens
 			for (var i:int = 0; i < suitcaseItems.length; i++) {
 				suitcase.addLoadedItemToQueue(suitcaseItems[i]);
 			}
+			
+			if(suitcase.getQueueditem().initialized)
+				drawScreen();
+			else {
+				_dispatcher.addEventListener("Loaded", drawScreenEvent);
+			}
+		}
+		
+		private function drawScreenEvent(e:flash.events.Event):void {
 			drawScreen();
 		}
 		
 		private function initSuitcaseBuilder():void {
-			var _dispatcher:EventDispatcher = new EventDispatcher();
-
+			
 			_dispatcher.addEventListener("BuilderLoaded", initItems);
 			builder = new SuitcaseBuilder(_dispatcher);
 			

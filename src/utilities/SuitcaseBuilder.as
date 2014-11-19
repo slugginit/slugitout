@@ -58,7 +58,6 @@ package utilities {
 				trace("Adding object of size: " + size);
 			}
 			
-			initialized = true;
 			dispatcher.dispatchEvent(new Event("BuilderLoaded"));
 		}
 		
@@ -209,7 +208,7 @@ package utilities {
 					var updatedPosition:IntPoint = new IntPoint(rectSize.x, size.y - ceiling, rectSize.y);
 					trace("Update position: " + updatedPosition.toString());
 					
-					var copiedContents:Vector.<Item> = struct.unloadObjects(updatedPosition);
+					var copiedContents:Vector.<Item> = !initialized ? struct.unloadObjectsWithDispatcher(dispatcher) : struct.unloadObjects(updatedPosition);
 					
 					for(var i:int = 0; i < copiedContents.length; i++) {
 						suitcaseContents.push(copiedContents[i]);
