@@ -21,6 +21,7 @@ package com.slugitout.tsapsa.screens
 	import flash.ui.Keyboard;
 	
 	import starling.display.BlendMode;
+	import starling.display.Button;
 	import starling.display.Image;
 	import starling.display.Sprite;
 	import starling.events.Event;
@@ -50,9 +51,7 @@ package com.slugitout.tsapsa.screens
 		/** Game title. */
 		//private var title:Image;
 		
-		/** Play button. */
-		//private var playBtn:Button;
-		
+
 		/** About button. */
 		//private var aboutBtn:Button;
 		
@@ -74,23 +73,25 @@ package com.slugitout.tsapsa.screens
 		
 		private function initSuitcaseBuilder():void {
 			var _dispatcher:EventDispatcher = new EventDispatcher();
+
 			_dispatcher.addEventListener("BuilderLoaded", initItems);
 			builder = new SuitcaseBuilder(_dispatcher);
 			
 			//builder.addEventListener(Event.COMPLETE, drawScreen);
 			
+
 			//suitcase.addFirstItem("../templates/Noodle.txt", "noodle", _dispatcher);
 			//suitcase.addItemtoQueue("../templates/Cube1.txt", "sock");
 			//suitcase.addItemtoQueue("../templates/Cube1.txt", "sock");
 			//suitcase.addItemtoQueue("../templates/Noodle.txt", "noodle");
+
 			//suitcase.addFirstItem("../templates/camera.txt", "camera", _dispatcher);
 			/*suitcase.addItemtoQueue("../templates/boot.txt", "boot");
 			suitcase.addItemtoQueue("../templates/bottle.txt", "bottle");
-			suitcase.addItemtoQueue("../templates/camera.txt", "camera");
-			suitcase.addItemtoQueue("../templates/doll.txt", "doll");
-			suitcase.addItemtoQueue("../templates/hairdryer.txt", "hairdryer");
-			suitcase.addItemtoQueue("../templates/handcuffs.txt", "handcuffs");
+
+
 			suitcase.addItemtoQueue("../templates/money.txt", "money");*/
+
 		}
 		
 		
@@ -138,13 +139,14 @@ package com.slugitout.tsapsa.screens
 			//camera rotation
 			if (e.keyCode == Keyboard.Q){
 				cameraRotation -= 1;
-				suitcase.rotateCamera(cameraRotation);	
+				suitcase.rotateCamera(cameraRotation);
 			}
-			if (e.keyCode == Keyboard.E) {
+			if (e.keyCode == Keyboard.E){
 				cameraRotation += 1;
 				suitcase.rotateCamera(cameraRotation);
 			}
 			
+
 			suitcase.moveItem(transPoint, rotPoint);
 			
 			
@@ -173,7 +175,6 @@ package com.slugitout.tsapsa.screens
 		{
 			this.removeEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
 			stage.addEventListener(KeyboardEvent.KEY_DOWN, processInput);
-			
 		}
 		
 		
@@ -185,9 +186,12 @@ package com.slugitout.tsapsa.screens
 			// GENERAL ELEMENTS
 			loaded = true;
 			
-			bg = new Image(Assets.getTexture("BgWelcome"));
-			bg.blendMode = BlendMode.NONE;
-			
+			//bg = new Image(Assets.getTexture("BgWelcome2"));
+			//bg.blendMode = BlendMode.NONE;
+			//bg.width=1280;
+			//bg.height=740;
+			//this.addChild(bg);
+
 			this.addChild(suitcase);
 			suitcase.moveItem(new IntPoint(0, 0, 0),new Point(0, 0, 0));
 			suitcase.rotateCamera(0);
@@ -222,10 +226,9 @@ package com.slugitout.tsapsa.screens
 			
 		}
 			private function onAboutBackClick(event:Event):void
-		{			
+		{
 			initialize();
 		}
-		
 		
 		
 		/**
@@ -237,15 +240,16 @@ package com.slugitout.tsapsa.screens
 			disposeTemporarily();
 			
 			this.visible = true;
-			
+			if(suitcase.saved()){
+				suitcase.Loadone();
+			}
 			// If not coming from about, restart playing background music.
 			/*if (screenMode != "about")
 			{
 				if (!Sounds.muted) Sounds.sndBgMain.play(0, 999);
 			}*/
 			
-			screenMode = "welcome";
-			
+			screenMode = "welcome";			
 			/*hero.visible = true;
 			playBtn.visible = true;
 			aboutBtn.visible = true;
@@ -297,6 +301,7 @@ package com.slugitout.tsapsa.screens
 			
 			if (screenMode != "about") SoundMixer.stopAll();
 		}
+		
 	}
 }
 

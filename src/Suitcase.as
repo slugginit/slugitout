@@ -4,6 +4,7 @@ package {
 	import display.DisplayQueue;
 	
 	import flash.events.EventDispatcher;
+	import flash.net.SharedObject;
 	import flash.net.dns.AAAARecord;
 	
 	import flashx.textLayout.formats.Float;
@@ -23,6 +24,9 @@ package {
 		private var rotatedBag:IntPoint;
 		
 		public var contents:Array;
+		private var saveArray:Array=new Array();
+		private var nameArray:Array=new Array();
+		private var imgarray:Array=new Array();
 		private var placedItems:Vector.<Item> = new Vector.<Item>();
 		private var queuedItems:Vector.<Item> = new Vector.<Item>();
 		private var item_index:int = 0;
@@ -34,8 +38,9 @@ package {
 		
 		public var done:Boolean = false;
 		
-		
 		private var displayQueue:DisplayQueue = new DisplayQueue();
+		
+		private var saveFile:SharedObject=SharedObject.getLocal("save1");
 		
 		public function Suitcase(size:IntPoint) {
 			Constant.SUITCASE_OFFSET = new Array(4);
@@ -59,6 +64,7 @@ package {
 			}
 			
 			placedItems = new Vector.<Item>();
+			saveFile.clear();
 		}
 		
 		public function addFirstItem(filename:String, prefix:String, dispatcher:EventDispatcher):void {
@@ -86,30 +92,57 @@ package {
 		
 		public function placeItem():Boolean {
 			var item:Item = queuedItems[item_index];
+			var array1:Array=new Array();
+			var posarray:Array=new Array();
+			var oriarray:Array=new Array();
+			if(this.saved()){
+				saveArray=saveFile.data.placed;
+				posarray=saveFile.data.position;
+				oriarray=saveFile.data.orientation;
+			}
 			//if the item can't be placed don't place it
 			if (!item.placeable) return false;
 				
-			//fill in blocks contained by faces
+			//fill in blocks containe'd by faces
 			for (var i :int = 0; i < item.positionedSkeleton.length; i++) {
 				//rotate point by current rotation and place it
 				var p:IntPoint = item.positionedSkeleton[i].point;
+				var array2:Array=new Array();
 				trace("Placing item at " + p.toString());
 				contents[p.x][p.y][p.z] = true;
+				//saving positioned skeleton to arrays
+				array2.push(p.x);
+				array2.push(p.y);
+				array2.push(p.z);
+				array1.push(array2);
 			}
-			
 			//add item to plced and remove it from queued
 			item.placed = true;
-			placedItems.push(item);	
+			placedItems.push(item);
 			queuedItems.splice(item_index, 1);
-			
 			cycleQueuedItem(0);
 			if (queuedItems.length == 0) {
 				done = true;
+				saveFile.clear();
+				saveFile.data.saved=false;
+				saveFile.flush();
 				return true;
 			}
+			saveArray.push(array1);
+			saveFile.data.placed=saveArray;
+			//save position and orientation for sprite drawing?
+			posarray.push(item.position.x,item.position.y,item.position.z);
+			oriarray.push(item.orientation.x,item.position.y,item.position.z);
+			saveFile.data.position=posarray;
+			saveFile.data.orientation=oriarray;
+			imgarray.push(item.getImage());
+			saveFile.data.image=imgarray;
+			nameArray.push(item.getPrefix());
+			saveFile.data.names=nameArray;
+			saveFile.data.saved=true;
+			saveFile.flush();
 			addChild(queuedItems[item_index]);
 			drawItem(queuedItems[item_index]);
-			
 			return true;
 		}
 		
@@ -153,9 +186,7 @@ package {
 				if (rotatedBag.x < 0) {
 					frontQuad.x += Constant.BLOCK_WIDTH;
 				}
-				
 				this.addChild(frontQuad);
-				
 				
 				//left face horizontal lines
 				var leftQuad:Quad = new Quad(Constant.BLOCK_WIDTH*rotatedBag.z*.615, 1, Color.WHITE);
@@ -208,8 +239,6 @@ package {
 				}
 				this.addChild(topQuad);
 			}
-			
-			
 			
 			for (var j:int = 0; j <= Math.abs(rotatedBag.z); j++) {
 				//top face horizontal lines
@@ -357,17 +386,18 @@ package {
 		public function rotateCamera(cameraOffset:Number) : void {
 			orientation.y += (cameraOffset + 4);
 			orientation.y = orientation.y%4;
+			
 			trace("Orientation is " + orientation.y);
 			
 			var cameraMat:Matrix = new Matrix(0, Math.PI*orientation.y/2, 0);
 			rotatedBag = cameraMat.rotateInt(size);
+			
 			
 			//rotate all the items while we're at it
 			for (var i:int = 0; i < placedItems.length; i++)
 				placedItems[i].rotateItem(new Point(0, cameraOffset*Math.PI/2, 0));
 			if (queuedItems.length > 0)
 				queuedItems[item_index].rotateItem(new Point(0, cameraOffset*Math.PI/2, 0));
-							
 		}
 		
 		public function moveItem(transPoint:IntPoint, rotPoint:Point) :void {
@@ -382,7 +412,6 @@ package {
 			
 			item.position.add(transPoint);
 			trace("New transPoint: " + transPoint + " new position: " + item.position);
-
 			
 			var rotMat:Matrix = new Matrix(rotPoint.x, rotPoint.y, rotPoint.z);
 			
@@ -456,6 +485,63 @@ package {
 			}
 		
 		}
-		
+	
+		public function saved() :Boolean{
+			return saveFile.data.saved;
+		}
+		//check which items need to be loaded
+		public function Loadone() :void{
+			nameArray=saveFile.data.names;
+			var removed:Array=new Array();
+			for(var i:int=0;i<nameArray.length;i++){
+				for(var j:int=0;j<queuedItems.length;j++){
+					if(queuedItems[j].getPrefix()==nameArray[i]){
+						if(j in removed){
+							continue;
+						}
+						removed.push(j);
+						item_index=j;
+						moveItem(new IntPoint(0, 0, 0), new Point(0, 0, 0))
+						Loadtwo(j,i);
+						break;
+					}
+				}
+			}
+			removed.sort();
+			for(var a:int=removed.length;a>0;a--)
+			{
+				queuedItems.splice(removed[a-1], 1);
+			}
+			item_index=0;
+			moveItem(new IntPoint(0, 0, 0), new Point(0, 0, 0))
+			addChild(queuedItems[item_index]);
+			drawItem(queuedItems[item_index]);
+			moveItem(new IntPoint(0, 0, 0), new Point(0, 0, 0))
+		}
+		//load all the item variables
+		public function Loadtwo(i:int,j:int):void{
+			var item:Item = queuedItems[i];
+			var loadArray:Array=new Array();
+			var imagenum:Array=new Array();
+			loadArray=saveFile.data.placed
+			imagenum=saveFile.data.image
+			//item.positionedSkeleton = new Vector.<SkeletonPoint>();
+			for (var k :int = 0; k < item.positionedSkeleton.length; k++) {
+					var p:IntPoint=new IntPoint(loadArray[j][k][0],
+						loadArray[j][k][1],
+						loadArray[j][k][2])
+					item.positionedSkeleton[k].point=p;
+					contents[p.x][p.y][p.z] = true;
+			}
+			item.position.x=saveFile.data.position[3*j+0];
+			item.position.y=saveFile.data.position[3*j+1];
+			item.position.z=saveFile.data.position[3*j+2];
+			item.orientation.x=saveFile.data.orientation[3*j+0];
+			item.orientation.y=saveFile.data.orientation[3*j+1];
+			item.orientation.z=saveFile.data.orientation[3*j+2];
+			item.setImage(imagenum[j]);
+			item.placed = true;
+			placedItems.push(item);
+		}
 	}
 }

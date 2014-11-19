@@ -191,7 +191,6 @@ package {
 				this.addChild(placingQuadLeft);
 			}
 			
-			
 		}
 
 		public function rotateItem(rotPoint:Point):void {
@@ -236,15 +235,26 @@ package {
 					}
 				}
 			}
-
-
-				
+			
+			
 			currentSprite = new Image(Assets.getTexture(spritePrefix + imageIndex));
 			currentSprite.scaleX = .75;
 			currentSprite.scaleY = .75;
 		}
 
-		
+		public function getPrefix():String{
+			return spritePrefix;
+		}
+		public function getImage():int{
+			return this.imageIndex;
+		}
+		public function setImage(x:int):void{
+			this.imageIndex=x;
+			currentSprite = new Image(Assets.getTexture(spritePrefix + imageIndex));
+			currentSprite.scaleX = .75;
+			currentSprite.scaleY = .75;
+			return;
+		}
 	}
 	
 }
