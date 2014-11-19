@@ -41,6 +41,9 @@ package utilities {
 			this.z += other.z;
 		}
 		
+		public function copy():Point {
+			return new Point(x, y, z);	
+		}
 		
 	}
 }

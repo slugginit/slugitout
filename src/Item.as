@@ -41,7 +41,7 @@ package {
 		private var spritePrefix:String = null;
 		
 		private var currentSprite:Image = null;
-		
+
 		/**
 		 * Constructor - pass filename to load sprites and points
 		 */
@@ -53,6 +53,27 @@ package {
 			currentSprite = new Image(Assets.getTexture(spritePrefix + imageIndex));
 		}
 		
+		public function copyItem():Item {
+			var newItem:Item = new Item(spritePrefix);
+			if (skeleton != null) {
+				newItem.skeleton = new Vector.<IntPoint>();
+				for (var i:int = 0; i < skeleton.length; i++) {
+					newItem.skeleton.push(new IntPoint(skeleton[i].x, skeleton[i].y, skeleton[i].z));
+				}
+				newItem.initialized = true;	
+			}
+			else {
+				newItem.loadFile("../templates/" + spritePrefix + ".txt");
+			}
+			newItem.position = position.copy();
+			newItem.orientation = orientation.copy();
+			newItem.spritePrefix = spritePrefix;
+			newItem.currentSprite = new Image(Assets.getTexture(spritePrefix + imageIndex));
+			
+			return newItem;
+		}
+		
+		
 		public function addDispatcher(dispatcher:EventDispatcher):void {
 			_dispatcher = dispatcher;
 		}
@@ -61,6 +82,19 @@ package {
 			textLoader.load(new URLRequest(filename));
 			textLoader.addEventListener(Event.COMPLETE, readFile);
 		}
+		
+		/*
+		public function loadFileWithPosition(filename:String, pos:IntPoint, rot:Point):void {
+			trace("Loading item " + filename + position + rot);
+			var i:int = 0;
+			for(i = 0; i < rot.x; i++) rotateItem(new Point(Math.PI/2, 0, 0));
+			for(i = 0; i < rot.y; i++) rotateItem(new Point(0, -Math.PI/2, 0));
+			for(i = 0; i < rot.z; i++) rotateItem(new Point(0, 0, Math.PI/2));
+			
+			orientation = new Point(rot.x*Math.PI/2, -rot.y*Math.PI/2, rot.z*Math.PI/2);
+			position = pos;
+			loadFile(filename);
+		}*/
 		
 		
 		private function readFile(e:Event):void {
@@ -88,6 +122,15 @@ package {
 			if (_dispatcher != null)
 				_dispatcher.dispatchEvent(new Event("Loaded"));
 			
+			//if position and rotation were pre-set, perform transformations
+			var rotMat:Matrix = new Matrix(orientation.x, orientation.y, orientation.z);
+			positionedSkeleton = new Vector.<SkeletonPoint>();
+			for (i = 0; i < skeleton.length; i++) {
+				p = rotMat.rotateInt(skeleton[i]);
+				skeleton[i] = new IntPoint(p.x, p.y, p.z);
+				positionedSkeleton.push(new SkeletonPoint(skeleton[i]));
+			}
+			
 			initialized = true;
 			
 		}
@@ -95,8 +138,11 @@ package {
 		public function drawObjectGuidelines(cameraRotation:Number, ySize:int, color:int):void {
 			this.removeChildren(0, this.numChildren);
 			
+			if(!initialized)
+				return;
+			
 			var positionedSprite :PositionedSprite = new PositionedSprite(currentSprite, cameraRotation, position);
-			trace("display queue position: " + position);
+			trace("display queue position: " + position + " initialized: " + initialized);
 			DisplayQueue.addSprite(positionedSprite);
 			
 			/*
@@ -149,19 +195,19 @@ package {
 		}
 
 		public function rotateItem(rotPoint:Point):void {
-			trace("Rotating object: " + rotPoint.toString());
+			//trace("Rotating object " + spritePrefix + ": " + rotPoint.toString());
 			var mapping:ArtMapping = new ArtMapping();
 			
 			if (rotPoint.x > 0) {
-				trace("Rotating " + imageIndex + " to " + ArtMapping.mappings[imageIndex][0]);
+				//trace("Rotating " + imageIndex + " to " + ArtMapping.mappings[imageIndex][0]);
 				imageIndex = ArtMapping.mappings[imageIndex][0];
 			}
 			if (rotPoint.y < 0) {
-				trace("Rotating " + imageIndex + " to " + ArtMapping.mappings[imageIndex][1]);
+				//trace("Rotating " + imageIndex + " to " + ArtMapping.mappings[imageIndex][1]);
 				imageIndex = ArtMapping.mappings[imageIndex][1];
 			}
 			if (rotPoint.z > 0) {
-				trace("Rotating " + imageIndex + " to " + ArtMapping.mappings[imageIndex][2]);
+				//trace("Rotating " + imageIndex + " to " + ArtMapping.mappings[imageIndex][2]);
 				imageIndex = ArtMapping.mappings[imageIndex][2];
 			}
 			

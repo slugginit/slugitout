@@ -74,6 +74,10 @@ package {
 			queuedItems.push(item);
 		}
 		
+		public function addLoadedItemToQueue(item:Item) : void {
+			queuedItems.push(item);
+		}
+		
 		public function cycleQueuedItem(direction :int) : void {
 			item_index = (item_index + direction + queuedItems.length)%queuedItems.length;
 			moveItem(new IntPoint(0, 0, 0), new Point(0, 0, 0));

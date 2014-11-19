@@ -36,6 +36,17 @@ package utilities {
 			return "(" + x + "," + y + "," + z + ")";
 		}
 		
+		public function fromString(point:String):void {
+			//trace("trying to parse: " + point);
+			point = point.replace("(", "");
+			point = point.replace(")", "");
+			var points:Array = point.split(",");
+			x = points[0];
+			y = points[1];
+			z = points[2];
+			
+		}
+		
 		public function add(other:IntPoint):void {
 			this.x += other.x;
 			this.y += other.y;
@@ -46,6 +57,10 @@ package utilities {
 			x = Math.abs(x);
 			y = Math.abs(y);
 			z = Math.abs(z);
+		}
+		
+		public function copy():IntPoint {
+			return new IntPoint(x, y, z);
 		}
 		
 	}

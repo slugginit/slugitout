@@ -14,6 +14,8 @@
 package com.slugitout.tsapsa.screens
 {
 	
+	import display.DisplayQueue;
+	
 	import flash.events.EventDispatcher;
 	import flash.media.SoundMixer;
 	import flash.ui.Keyboard;
@@ -23,9 +25,11 @@ package com.slugitout.tsapsa.screens
 	import starling.display.Sprite;
 	import starling.events.Event;
 	import starling.events.KeyboardEvent;
+	import starling.utils.Color;
 	
 	import utilities.IntPoint;
 	import utilities.Point;
+	import utilities.SuitcaseBuilder;
 	
 	/**
 	 * This is the welcome or main menu class for the game.
@@ -58,46 +62,44 @@ package com.slugitout.tsapsa.screens
 		private var scoreimage:Image;
 		
 		private var suitcase:Suitcase = new Suitcase(new IntPoint(8, 5, 5));
-		/*private var aboutText:TextField;
-		private var hsharmaBtn:Button;
-		private var starlingBtn:Button;
-		private var backBtn:Button;
-		private var screenMode:String;
-		private var _currentDate:Date;
-		private var fontRegular:Font;
-		private var tween_hero:Tween;
-		*/
+		private var builder:SuitcaseBuilder;
 		
+		private function initItems(e:flash.events.Event):void {
+			var suitcaseItems:Vector.<Item> = builder.constructSuitcase(new IntPoint(5, 5, 5));
+			for (var i:int = 0; i < suitcaseItems.length; i++) {
+				suitcase.addLoadedItemToQueue(suitcaseItems[i]);
+			}
+			drawScreen();
+		}
 		
-		//cube
-		private var cube:Array = new Array();
-		
-		private function initItems():void {
+		private function initSuitcaseBuilder():void {
 			var _dispatcher:EventDispatcher = new EventDispatcher();
-			_dispatcher.addEventListener("Loaded", drawScreen);
+			_dispatcher.addEventListener("BuilderLoaded", initItems);
+			builder = new SuitcaseBuilder(_dispatcher);
+			
+			//builder.addEventListener(Event.COMPLETE, drawScreen);
+			
 			//suitcase.addFirstItem("../templates/Noodle.txt", "noodle", _dispatcher);
 			//suitcase.addItemtoQueue("../templates/Cube1.txt", "sock");
 			//suitcase.addItemtoQueue("../templates/Cube1.txt", "sock");
 			//suitcase.addItemtoQueue("../templates/Noodle.txt", "noodle");
-			suitcase.addFirstItem("../templates/camera.txt", "camera", _dispatcher);
-			suitcase.addItemtoQueue("../templates/boot.txt", "boot");
+			//suitcase.addFirstItem("../templates/camera.txt", "camera", _dispatcher);
+			/*suitcase.addItemtoQueue("../templates/boot.txt", "boot");
 			suitcase.addItemtoQueue("../templates/bottle.txt", "bottle");
 			suitcase.addItemtoQueue("../templates/camera.txt", "camera");
 			suitcase.addItemtoQueue("../templates/doll.txt", "doll");
 			suitcase.addItemtoQueue("../templates/hairdryer.txt", "hairdryer");
 			suitcase.addItemtoQueue("../templates/handcuffs.txt", "handcuffs");
-			suitcase.addItemtoQueue("../templates/money.txt", "money");
-			
-			
-			
-			suitcase.getQueueditem().addEventListener(Event.COMPLETE, drawScreen);
+			suitcase.addItemtoQueue("../templates/money.txt", "money");*/
 		}
+		
+		
 		
 		public function WelcomeScreen()
 		{
 			super();
 			this.visible = false;
-			initItems();
+			initSuitcaseBuilder();
 			this.addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
 			
 		}
@@ -143,8 +145,6 @@ package com.slugitout.tsapsa.screens
 				suitcase.rotateCamera(cameraRotation);
 			}
 			
-			
-			
 			suitcase.moveItem(transPoint, rotPoint);
 			
 			
@@ -158,8 +158,8 @@ package com.slugitout.tsapsa.screens
 				}
 			}
 			
+			trace("Redrawing screen");
 			suitcase.drawSuitcase();
-
 		}
 		
 		
@@ -180,7 +180,8 @@ package com.slugitout.tsapsa.screens
 		/**
 		 * Draw all the screen elements. 
 		 */
-		private function drawScreen(e:flash.events.Event):void {
+		private function drawScreen():void {
+			trace("First screen draw");
 			// GENERAL ELEMENTS
 			loaded = true;
 			
@@ -191,6 +192,9 @@ package com.slugitout.tsapsa.screens
 			suitcase.moveItem(new IntPoint(0, 0, 0),new Point(0, 0, 0));
 			suitcase.rotateCamera(0);
 			suitcase.drawSuitcase();
+			
+			
+			
 			
 			//draw the item swap bucket
 			bucket = new Image(Assets.getTexture("bucket"));
