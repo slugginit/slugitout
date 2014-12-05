@@ -460,7 +460,11 @@ package {
 			}
 		
 		}
-	
+
+		public function saved() :Boolean{
+			return saveFile.data.saved;
+		}
+		
 		private function placesave(item:Item):void {
 			var array1:Array=new Array();
 			var posarray:Array=new Array();
