@@ -3,9 +3,12 @@ package {
 	
 	import display.DisplayQueue;
 	
+	import starling.display.Image;
+	
 	import flash.events.EventDispatcher;
 	import flash.net.SharedObject;
 	import flash.net.dns.AAAARecord;
+	import flash.utils.Dictionary;
 	
 	import flashx.textLayout.formats.Float;
 	
@@ -149,6 +152,31 @@ package {
 		public function drawSuitcase():void {
 			this.removeChildren(0, this.numChildren);
 			displayQueue.clearQueue();
+			
+			//count up icons
+			var icons:Dictionary = new Dictionary();
+			var uniqueIcons:int = 0;
+			for(i = 0; i < queuedItems.length; i++) {
+				if(icons[queuedItems[i].spritePrefix] == null) {
+					icons[queuedItems[i].spritePrefix] = 1;
+					
+					uniqueIcons++;
+				}
+				else
+					icons[queuedItems[i].spritePrefix]++;
+			}
+			//draw icons
+			var offset:int = 0;
+			for (var icon in icons) {
+				var prefix:String = String(icon);
+				trace("trying to load " + prefix + "Icon");
+				var iconSprite:Image = new Image(Assets.getTexture(prefix + "Icon"));
+				iconSprite.x = 15;
+				iconSprite.y = 15 + offset*115;
+				offset++;
+				this.addChild(iconSprite);
+			}
+			
 			
 			//draw objects
 			for (i = 0; i < placedItems.length; i++){

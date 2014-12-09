@@ -21,7 +21,7 @@ package utilities {
 			rectangles = new Vector.<Structure>();
 			dispatcher = _dispatcher;
 			
-			trace("Preparing to read file");
+			//trace("Preparing to read file");
 			
 			//read in files
 			textLoader.load(new URLRequest(fileName));
@@ -30,7 +30,7 @@ package utilities {
 		}
 		
 		private function readFile(e:Event): void {
-			trace("Loading rectangles file completed - reading");
+			//trace("Loading rectangles file completed - reading");
 			rectangles = new Vector.<Structure>();
 			var lines:Array = e.target.data.split(/\n/);
 			
@@ -55,7 +55,7 @@ package utilities {
 				}
 				
 				rectangles.push(struct);
-				trace("Adding object of size: " + size);
+				//trace("Adding object of size: " + size);
 			}
 			
 			dispatcher.dispatchEvent(new Event("BuilderLoaded"));
@@ -81,7 +81,7 @@ package utilities {
 						
 						rect.width = width;
 						rect.height = height;
-						trace("Found rectangle: pos: (" + rect.x + ", " + rect.y + ") size: (" + rect.width + ", " + rect.height + ")"); 
+						//trace("Found rectangle: pos: (" + rect.x + ", " + rect.y + ") size: (" + rect.width + ", " + rect.height + ")"); 
 						break;
 					}
 				}
@@ -89,14 +89,14 @@ package utilities {
 				if (rect != null) break;
 			}
 			
-			if (rect == null) trace("Returning null rect");
+			//if (rect == null) trace("Returning null rect");
 			
 			return rect;
 		}
 		
 		private function findStructure(rect:Rectangle, ySize:int, layer:Array, ceiling:int):Structure {
 			var subsetRects:Vector.<Structure> = new Vector.<Structure>();
-			trace("Find Structure -  ySize: " + ySize + " ceiling: " + ceiling + " rectangles: " + rectangles.length);
+			//trace("Find Structure -  ySize: " + ySize + " ceiling: " + ceiling + " rectangles: " + rectangles.length);
 			//if ySize is 0, just pick any struct with height less than the ceiling
 			if(ySize == 0) {
 				for (var k:int = 0; k < rectangles.length; k++) {
@@ -154,14 +154,14 @@ package utilities {
 			
 			var chosenStruct:Structure = null;
 			var chosenSize:IntPoint = new IntPoint(rect.width, 0, rect.height);
-			trace("Found " + subsetRects.length + " potential structures.");
+			//trace("Found " + subsetRects.length + " potential structures.");
 			if (subsetRects.length > 0) {
 				var index:int = Math.random()*subsetRects.length;
 				chosenStruct = subsetRects[index];
 				chosenSize = chosenStruct.size;
 			}
 			
-			trace("filling array " + chosenSize);
+			//trace("filling array " + chosenSize);
 			//color array where new block is going
 			for (var x:int = 0; x < chosenSize.x; x++) {
 				for (var z:int = 0; z < chosenSize.z; z++)
@@ -188,36 +188,37 @@ package utilities {
 				
 				var rectSize:Rectangle;
 				var ySize:int = 0;
-				trace("Filling a new layer, ceiling: " + ceiling);
+				//trace("Filling a new layer, ceiling: " + ceiling);
 				while ((rectSize = identifySubRectangle(layer)) != null) {
 					var struct:Structure = findStructure(rectSize, ySize, layer, ceiling);
 					//print layer for debugging
-					trace("LAYER");
+					//trace("LAYER");
 					for (x = 0; x < layer.length; x++) {
 						var s:String = "";
 						for (z = 0; z < size.z; z++)
 							s += layer[x][z] == false ? "-" : "x";
-						trace("\t" + s);	
+						//trace("\t" + s);	
 					}
 					
 					//if it's null we couldn't fill this sub-rectangle
 					if (struct == null) continue;
-					trace("\tFound struct of size " + struct.size);
+					//trace("\tFound struct of size " + struct.size);
 					ySize = struct.size.y;
 					
 					var updatedPosition:IntPoint = new IntPoint(rectSize.x, size.y - ceiling, rectSize.y);
-					trace("Update position: " + updatedPosition.toString());
+					//trace("Update position: " + updatedPosition.toString());
 					
 					var copiedContents:Vector.<Item> = !initialized ? struct.unloadObjectsWithDispatcher(dispatcher) : struct.unloadObjects(updatedPosition);
 					
 					for(var i:int = 0; i < copiedContents.length; i++) {
+						trace("Adding " + copiedContents[i].spritePrefix);
 						suitcaseContents.push(copiedContents[i]);
 					}
 
 				}
 				
 				ceiling -= ySize;
-				trace("Ceiling : " + ceiling);
+				//trace("Ceiling : " + ceiling);
 			}
 			
 			trace("Filled suitcase with " + suitcaseContents.length + " items.");

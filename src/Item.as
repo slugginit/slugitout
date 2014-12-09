@@ -21,7 +21,6 @@ package {
 	public class Item extends Sprite {
 		
 		//store unique points as well as faces
-		public var faces:Vector.<Face>;
 		public var position:IntPoint;
 		public var orientation:Point;
 		public var rotatedPosition:IntPoint;
@@ -38,7 +37,7 @@ package {
 		private var _dispatcher:EventDispatcher;
 		
 		private var imageIndex:int = 0;
-		private var spritePrefix:String = null;
+		public var spritePrefix:String = null;
 		
 		private var currentSprite:Image = null;
 
@@ -119,8 +118,6 @@ package {
 		
 		
 		private function readFile(e:Event):void {
-			faces = new Vector.<Face>();
-			
 			var lines:Array = e.target.data.split(/\n/);
 			//create faces
 			var points:Vector.<IntPoint> = new Vector.<IntPoint>();
@@ -130,7 +127,7 @@ package {
 				if (lines[i].charAt(0) == "$") {
 					skeleton = points;
 					points = new Vector.<IntPoint>();
-					trace("Setting skeleton");
+					//trace("Setting skeleton");
 					continue;
 				}
 				
@@ -163,7 +160,7 @@ package {
 				return;
 			
 			var positionedSprite :PositionedSprite = new PositionedSprite(currentSprite, cameraRotation, position);
-			trace("display queue position: " + position + " initialized: " + initialized);
+			//trace("display queue position: " + position + " initialized: " + initialized);
 			DisplayQueue.addSprite(positionedSprite);
 			
 			/*

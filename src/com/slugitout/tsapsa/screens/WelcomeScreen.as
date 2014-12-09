@@ -65,7 +65,7 @@ package com.slugitout.tsapsa.screens
 		private var builder:SuitcaseBuilder;
 		
 		private function initItems(e:flash.events.Event):void {
-			var suitcaseItems:Vector.<Item> = builder.constructSuitcase(new IntPoint(5, 5, 5));
+			var suitcaseItems:Vector.<Item> = builder.constructSuitcase(new IntPoint(3, 3, 3));
 			for (var i:int = 0; i < suitcaseItems.length; i++) {
 				suitcase.addLoadedItemToQueue(suitcaseItems[i]);
 			}
@@ -206,16 +206,14 @@ package com.slugitout.tsapsa.screens
 			suitcase.rotateCamera(0);
 			suitcase.drawSuitcase();
 			
-			
-			
-			
 			//draw the item swap bucket
 			bucket = new Image(Assets.getTexture("bucket"));
 			bucket.x = 0;
 			bucket.y = 500;
 			bucket.width = 256;
 			bucket.height =256;
-			this.addChild(bucket);
+			
+			this.addChildAt(bucket,0);
 			
 			//draw the belt
 			belt = new Image(Assets.getTexture("belt"));
@@ -223,7 +221,7 @@ package com.slugitout.tsapsa.screens
 			belt.y = 0;
 			belt.width = 256;
 			belt.height = 500;
-			this.addChild(belt);
+			this.addChildAt(belt,0);
 			
 			scoreimage = new Image(Assets.getTexture("scoreimage"));
 			scoreimage.x = 1050;
