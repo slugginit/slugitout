@@ -3,8 +3,6 @@ package {
 	
 	import display.DisplayQueue;
 	
-	import starling.display.Image;
-	
 	import flash.events.EventDispatcher;
 	import flash.net.SharedObject;
 	import flash.net.dns.AAAARecord;
@@ -12,8 +10,10 @@ package {
 	
 	import flashx.textLayout.formats.Float;
 	
+	import starling.display.Image;
 	import starling.display.Quad;
 	import starling.display.Sprite;
+	import starling.text.TextField;
 	import starling.utils.Color;
 	
 	import utilities.IntPoint;
@@ -143,13 +143,22 @@ package {
 			//draw icons
 			var offset:int = 0;
 			for (var icon in icons) {
+				//icon
 				var prefix:String = String(icon);
 				trace("trying to load " + prefix + "Icon");
 				var iconSprite:Image = new Image(Assets.getTexture(prefix + "Icon"));
-				iconSprite.x = 15;
-				iconSprite.y = 15 + offset*115;
+				iconSprite.x = 15 +offset%2*115;
+				iconSprite.y = 15 + (int)(offset/2)*90;
+				
+				//text
+				var textField:TextField = new TextField(50, 50, icons[prefix], "Arial", 36, Color.RED);
+				textField.x = 85 + offset%2*115;
+				textField.y = 15 + (int)(offset/2)*90;
+				
+				
 				offset++;
 				this.addChild(iconSprite);
+				this.addChild(textField);
 			}
 			
 			
