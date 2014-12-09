@@ -90,19 +90,10 @@ package {
 		public function cycleQueuedItem(direction :int) : void {
 			item_index = (item_index + direction + queuedItems.length)%queuedItems.length;
 			moveItem(new IntPoint(0, 0, 0), new Point(0, 0, 0));
-		}
-		
+		}		
 		
 		public function placeItem():Boolean {
 			var item:Item = queuedItems[item_index];
-			var array1:Array=new Array();
-			var posarray:Array=new Array();
-			var oriarray:Array=new Array();
-			if(this.saved()){
-				saveArray=saveFile.data.placed;
-				posarray=saveFile.data.position;
-				oriarray=saveFile.data.orientation;
-			}
 			//if the item can't be placed don't place it
 			if (!item.placeable) return false;
 				
@@ -113,17 +104,13 @@ package {
 				var array2:Array=new Array();
 				trace("Placing item at " + p.toString());
 				contents[p.x][p.y][p.z] = true;
-				//saving positioned skeleton to arrays
-				array2.push(p.x);
-				array2.push(p.y);
-				array2.push(p.z);
-				array1.push(array2);
 			}
 			//add item to plced and remove it from queued
 			item.placed = true;
 			placedItems.push(item);
 			queuedItems.splice(item_index, 1);
 			cycleQueuedItem(0);
+			placesave(item);
 			if (queuedItems.length == 0) {
 				done = true;
 				saveFile.clear();
@@ -131,19 +118,7 @@ package {
 				saveFile.flush();
 				return true;
 			}
-			saveArray.push(array1);
-			saveFile.data.placed=saveArray;
-			//save position and orientation for sprite drawing?
-			posarray.push(item.position.x,item.position.y,item.position.z);
-			oriarray.push(item.orientation.x,item.position.y,item.position.z);
-			saveFile.data.position=posarray;
-			saveFile.data.orientation=oriarray;
-			imgarray.push(item.getImage());
-			saveFile.data.image=imgarray;
-			nameArray.push(item.getPrefix());
-			saveFile.data.names=nameArray;
-			saveFile.data.saved=true;
-			saveFile.flush();
+			
 			addChild(queuedItems[item_index]);
 			drawItem(queuedItems[item_index]);
 			return true;
@@ -513,12 +488,45 @@ package {
 			}
 		
 		}
-	
+
 		public function saved() :Boolean{
 			return saveFile.data.saved;
 		}
-		//check which items need to be loaded
+		
+		private function placesave(item:Item):void {
+			var array1:Array=new Array();
+			var posarray:Array=new Array();
+			var oriarray:Array=new Array();
+			if(saveFile.data.saved){
+				saveArray=saveFile.data.placed;
+				posarray=saveFile.data.position;
+				oriarray=saveFile.data.orientation;
+			}
+			for (var i :int = 0; i < item.positionedSkeleton.length; i++) {
+				//rotate point by current rotation and place it
+				var p:IntPoint = item.positionedSkeleton[i].point;
+				var array2:Array=new Array();
+				//saving positioned skeleton to arrays
+				array2.push(p.x,p.y,p.z);
+				array1.push(array2);
+			}
+			saveArray.push(array1);
+			saveFile.data.placed=saveArray;
+			//save position and orientation for sprite drawing
+			posarray.push(item.position.x,item.position.y,item.position.z);
+			oriarray.push(item.orientation.x,item.position.y,item.position.z);
+			saveFile.data.position=posarray;
+			saveFile.data.orientation=oriarray;
+			imgarray.push(item.getImage());
+			saveFile.data.image=imgarray;
+			nameArray.push(item.getPrefix());
+			saveFile.data.names=nameArray;
+			saveFile.data.saved=true;
+			saveFile.flush();
+		}
+
 		public function Loadone() :void{
+			//checks which items in queue match ones in save
 			nameArray=saveFile.data.names;
 			var removed:Array=new Array();
 			for(var i:int=0;i<nameArray.length;i++){
@@ -546,8 +554,9 @@ package {
 			drawItem(queuedItems[item_index]);
 			moveItem(new IntPoint(0, 0, 0), new Point(0, 0, 0))
 		}
-		//load all the item variables
+
 		public function Loadtwo(i:int,j:int):void{
+			//loads the item variables
 			var item:Item = queuedItems[i];
 			var loadArray:Array=new Array();
 			var imagenum:Array=new Array();
