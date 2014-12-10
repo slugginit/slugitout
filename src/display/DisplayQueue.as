@@ -10,7 +10,7 @@ package display
 		
 		public static function addSprite(sprite:PositionedSprite):void {
 			displayQueue.push(sprite);
-			trace("Adding sprite to display queue: " + displayQueue.length);
+			//trace("Adding sprite to display queue: " + displayQueue.length);
 		}
 		
 		public function clearQueue():void {
@@ -23,7 +23,7 @@ package display
 			for (var i:int = 0; i < displayQueue.length; i++) {
 				this.addChild(displayQueue[i].sprite);
 			}
-			trace("drawing objects");
+			//trace("drawing objects");
 		}
 		
 		private static function sortLogic(a:PositionedSprite, b:PositionedSprite):int {

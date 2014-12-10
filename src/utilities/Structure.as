@@ -9,6 +9,10 @@ package utilities {
 			size = s;
 		}
 		
+		public function sortContents() {
+			contents.sort(Item.sort);	
+		}
+		
 		public function loadObject(objName:String, pos:IntPoint, rot:IntPoint):void {
 			var item: Item = new Item(objName);
 			item.loadFile("../templates/" + objName + ".txt");
@@ -43,7 +47,8 @@ package utilities {
 			return copiedItems;
 		}
 		
-		public function unloadObjects(position:IntPoint):Vector.<Item> {
+		public function unloadObjects():Vector.<Item> {
+			contents.sort(Item.sort);
 			//create copies of our objects with updated positions
 			var copiedItems:Vector.<Item> = new Vector.<Item>();
 			for (var i:int = 0; i < contents.length; i++) {
@@ -60,6 +65,10 @@ package utilities {
 				trace("Updated position to " + contents[i].position.toString());
 			}
 		}*/
+		
+		public static function sort(a:Structure, b:Structure) {
+			return a.contents[0].spritePrefix < b.contents[0].spritePrefix ? -1 : 1;
+		}
 	
 	}
 }

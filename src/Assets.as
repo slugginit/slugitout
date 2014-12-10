@@ -127,6 +127,9 @@ package
 		public static const handcuffsIcon:Class;
 		[Embed(source="../media/graphics/money/moneydrugs_icon.png")]
 		public static const moneyIcon:Class;
+		//icon selector
+		[Embed(source="../media/graphics/selector.png")]
+		public static const selector:Class;
 
 		//sprites
 		[Embed(source="../media/graphics/boot/stripperboot_PH_000.png")]

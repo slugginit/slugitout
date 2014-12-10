@@ -137,8 +137,6 @@ package {
 				points.push(p);	
 			}
 			
-			if (_dispatcher != null)
-				_dispatcher.dispatchEvent(new Event("Loaded"));
 			
 			//if position and rotation were pre-set, perform transformations
 			var rotMat:Matrix = new Matrix(orientation.x, orientation.y, orientation.z);
@@ -150,6 +148,12 @@ package {
 			}
 			
 			initialized = true;
+			
+			if (_dispatcher != null) {
+				_dispatcher.dispatchEvent(new Event("Loaded"));
+				trace("Broadcasting Loaded event from " + spritePrefix);	
+			}
+			
 			
 		}
 		
@@ -272,6 +276,13 @@ package {
 			currentSprite.scaleX = .75;
 			currentSprite.scaleY = .75;
 			return;
+		}
+		
+		public static function sort(a:Item, b:Item):int {
+			if (a.spritePrefix < b.spritePrefix) return -1;
+			else if (b.spritePrefix < a.spritePrefix) return 1;
+			else if (a._dispatcher != null) return -1;
+			else return 1;
 		}
 	}
 	

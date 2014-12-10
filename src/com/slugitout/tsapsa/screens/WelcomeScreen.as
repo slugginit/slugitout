@@ -78,6 +78,7 @@ package com.slugitout.tsapsa.screens
 		}
 		
 		private function drawScreenEvent(e:flash.events.Event):void {
+			trace("Drawing screen from Loaded event");
 			drawScreen();
 		}
 		
@@ -204,7 +205,8 @@ package com.slugitout.tsapsa.screens
 			this.addChild(suitcase);
 			suitcase.moveItem(new IntPoint(0, 0, 0),new Point(0, 0, 0));
 			suitcase.rotateCamera(0);
-			suitcase.drawSuitcase();
+			if(suitcase.getQueueditem().initialized)
+				suitcase.drawSuitcase();
 			
 			//draw the item swap bucket
 			bucket = new Image(Assets.getTexture("bucket"));

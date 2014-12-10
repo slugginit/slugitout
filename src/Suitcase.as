@@ -88,21 +88,35 @@ package {
 		}
 		
 		public function cycleQueuedItem(direction :int) : void {
-			item_index = (item_index + direction + queuedItems.length)%queuedItems.length;
+			if (direction == 0) {
+				item_index = (item_index + direction + queuedItems.length)%queuedItems.length;
+				return;
+			}
+			
+			var originalIndex:int = item_index;
+			var current:String = queuedItems[item_index].spritePrefix;
+			
+			while(queuedItems[item_index].spritePrefix == current) {
+				item_index = (item_index + direction + queuedItems.length)%queuedItems.length;
+				if (item_index == originalIndex) break;
+			}
+			trace("Original Index: " + originalIndex + " new index: " + item_index);
 			moveItem(new IntPoint(0, 0, 0), new Point(0, 0, 0));
 		}		
 		
 		public function placeItem():Boolean {
+			if (queuedItems.length() == 0) return false;
+			
 			var item:Item = queuedItems[item_index];
 			//if the item can't be placed don't place it
 			if (!item.placeable) return false;
 				
-			//fill in blocks containe'd by faces
+			//fill in blocks contained by faces
 			for (var i :int = 0; i < item.positionedSkeleton.length; i++) {
 				//rotate point by current rotation and place it
 				var p:IntPoint = item.positionedSkeleton[i].point;
 				var array2:Array=new Array();
-				trace("Placing item at " + p.toString());
+				//trace("Placing item at " + p.toString());
 				contents[p.x][p.y][p.z] = true;
 			}
 			//add item to plced and remove it from queued
@@ -124,42 +138,57 @@ package {
 			return true;
 		}
 		
+		private function drawIcons():void {
+			//draw icons
+			var offset:int = 0;
+			var currentPrefix:String = null;
+			var selectedPrefix:String = queuedItems[item_index].spritePrefix;
+			var count:int = 0;
+			for (var i:int = 0; i < queuedItems.length; i++) {
+				var prefix = queuedItems[i].spritePrefix;
+				if (prefix != currentPrefix) {
+					if (prefix == selectedPrefix) {
+						var selectedSprite:Image = new Image(Assets.getTexture("selector"));
+						selectedSprite.x = 15 +offset%2*115;
+						selectedSprite.y = 15 + (int)(offset/2)*90;
+						this.addChild(selectedSprite);
+					}
+					
+					//draw the last count and this sprite
+					if (count > 0) {
+						var textField:TextField = new TextField(50, 50, count.toString(), "Arial", 36, Color.RED);
+						textField.x = 85 + (offset-1)%2*115;
+						textField.y = 15 + (int)((offset-1)/2)*90;
+						
+						this.addChild(textField);
+					}
+					
+					var iconSprite:Image = new Image(Assets.getTexture(prefix + "Icon"));
+					iconSprite.x = 15 +offset%2*115;
+					iconSprite.y = 15 + (int)(offset/2)*90;
+					
+					offset++;
+					this.addChild(iconSprite);
+					
+					currentPrefix = queuedItems[i].spritePrefix;
+					count = 0;
+				}
+				
+				count++;
+			}
+			//draw last textfield
+			var textField:TextField = new TextField(50, 50, count.toString(), "Arial", 36, Color.RED);
+			textField.x = 85 + (offset-1)%2*115;
+			textField.y = 15 + (int)((offset-1)/2)*90;
+			
+			this.addChild(textField);
+			
+		}
+		
 		public function drawSuitcase():void {
 			this.removeChildren(0, this.numChildren);
 			displayQueue.clearQueue();
 			
-			//count up icons
-			var icons:Dictionary = new Dictionary();
-			var uniqueIcons:int = 0;
-			for(i = 0; i < queuedItems.length; i++) {
-				if(icons[queuedItems[i].spritePrefix] == null) {
-					icons[queuedItems[i].spritePrefix] = 1;
-					
-					uniqueIcons++;
-				}
-				else
-					icons[queuedItems[i].spritePrefix]++;
-			}
-			//draw icons
-			var offset:int = 0;
-			for (var icon in icons) {
-				//icon
-				var prefix:String = String(icon);
-				trace("trying to load " + prefix + "Icon");
-				var iconSprite:Image = new Image(Assets.getTexture(prefix + "Icon"));
-				iconSprite.x = 15 +offset%2*115;
-				iconSprite.y = 15 + (int)(offset/2)*90;
-				
-				//text
-				var textField:TextField = new TextField(50, 50, icons[prefix], "Arial", 36, Color.RED);
-				textField.x = 85 + offset%2*115;
-				textField.y = 15 + (int)(offset/2)*90;
-				
-				
-				offset++;
-				this.addChild(iconSprite);
-				this.addChild(textField);
-			}
 			
 			
 			//draw objects
@@ -184,7 +213,6 @@ package {
 			baseQuad.y = Constant.SUITCASE_OFFSET[orientation.y].y;
 			this.addChild(baseQuad);
 			
-			trace("Rotated bag: " + rotatedBag.toString());
 			for (var i:int = 0; i < size.y; i++) {
 				//front face horizontal lines
 				var frontQuad:Quad = new Quad(Constant.BLOCK_WIDTH*(rotatedBag.x), 1, Color.GREEN);
@@ -290,6 +318,7 @@ package {
 			//draw queued item guidelines
 			if (queuedItems.length > 0) {
 				drawItem(queuedItems[item_index]);
+				drawIcons();
 			}
 			
 			
@@ -300,6 +329,12 @@ package {
 		}
 		
 		private function drawItem(item: Item) : void {
+			//don't do anything if item didn't get initialized
+			if (!item.initialized){
+				trace("Trying to draw an item that is not initialized: " + item.spritePrefix + " queue position: " + item_index);
+				return;
+			}
+			
 			var cameraMat:Matrix = new Matrix(0, Math.PI*orientation.y/2, 0);
 			
 			//green out quads where the item is being placed
@@ -398,9 +433,7 @@ package {
 		public function rotateCamera(cameraOffset:Number) : void {
 			orientation.y += (cameraOffset + 4);
 			orientation.y = orientation.y%4;
-			
-			trace("Orientation is " + orientation.y);
-			
+						
 			var cameraMat:Matrix = new Matrix(0, Math.PI*orientation.y/2, 0);
 			rotatedBag = cameraMat.rotateInt(size);
 			
@@ -418,12 +451,13 @@ package {
 				return;
 			
 			var item:Item = queuedItems[item_index];
+			//make sure that this item is initialized
+			if (!item.initialized) return;
+			
 			var cameraMat:Matrix = new Matrix(0, -Math.PI*orientation.y/2, 0);
-			trace("Old transPoint: " + transPoint + " old position: " + item.position);
 			transPoint = cameraMat.rotateInt(transPoint);
 			
 			item.position.add(transPoint);
-			trace("New transPoint: " + transPoint + " new position: " + item.position);
 			
 			var rotMat:Matrix = new Matrix(rotPoint.x, rotPoint.y, rotPoint.z);
 			
@@ -450,9 +484,6 @@ package {
 				
 				item.positionedSkeleton.push(new SkeletonPoint(p));
 			}
-			
-			//trace("Max points: " + maxPoints.toString());
-			//trace("Min points: " + minPoints.toString());
 			
 			//just enforce the boundaries on the 0, 0 point so they don't get too far out of the suitcase
 			if (item.position.x + minPoints.x < 0) item.position.x = -minPoints.x;
@@ -482,7 +513,7 @@ package {
 			for (i = 0; i < item.positionedSkeleton.length; i++) {
 				item.positionedSkeleton[i].point.add(item.position);
 				p = item.positionedSkeleton[i].point;
-				//trace("Positioned Skeleton " + i + " position: " + p.toString());
+				
 				if (p.y >= size.y) {
 					item.positionedSkeleton[i].placeable = false;
 					item.placeable = false;

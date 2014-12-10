@@ -1,13 +1,12 @@
 package utilities {
 	import flash.events.Event;
+	import flash.events.EventDispatcher;
 	import flash.geom.Rectangle;
 	import flash.net.URLLoader;
 	import flash.net.URLRequest;
 	
 	import utilities.IntPoint;
 	import utilities.Structure;
-	
-	import flash.events.EventDispatcher;
 
 	public class SuitcaseBuilder {
 		private var fileName: String = "../rectangles.txt";
@@ -54,6 +53,7 @@ package utilities {
 					
 				}
 				
+				struct.sortContents();
 				rectangles.push(struct);
 				//trace("Adding object of size: " + size);
 			}
@@ -176,6 +176,7 @@ package utilities {
 			var ceiling:int = size.y;
 			
 			var suitcaseContents:Vector.<Item> = new Vector.<Item>();
+			var structs:Vector.<Structure> = new Vector.<Structure>();
 			
 			while(ceiling > 0) {
 				//reset layer array
@@ -208,18 +209,35 @@ package utilities {
 					var updatedPosition:IntPoint = new IntPoint(rectSize.x, size.y - ceiling, rectSize.y);
 					//trace("Update position: " + updatedPosition.toString());
 					
-					var copiedContents:Vector.<Item> = !initialized ? struct.unloadObjectsWithDispatcher(dispatcher) : struct.unloadObjects(updatedPosition);
+					structs.push(struct);
+					//var copiedContents:Vector.<Item> = !initialized ? struct.unloadObjectsWithDispatcher(dispatcher) : struct.unloadObjects(updatedPosition);
+					//initialized = true;
 					
-					for(var i:int = 0; i < copiedContents.length; i++) {
+					/*for(var i:int = 0; i < copiedContents.length; i++) {
 						trace("Adding " + copiedContents[i].spritePrefix);
 						suitcaseContents.push(copiedContents[i]);
-					}
+					}*/
 
 				}
 				
 				ceiling -= ySize;
 				//trace("Ceiling : " + ceiling);
 			}
+			
+			//sort objects and unload them with a dispatcher on the first item
+			structs.sort(Structure.sort);
+			var copiedContents:Vector.<Item> = structs[0].unloadObjectsWithDispatcher(dispatcher);
+			for (var i:int = 0; i < copiedContents.length; i++)
+				suitcaseContents.push(copiedContents[i]);
+				
+			
+			for (var i:int = 0; i < structs.length; i++) {
+				copiedContents = structs[i].unloadObjects();
+				for (var k:int = 0; k < copiedContents.length; k++)
+					suitcaseContents.push(copiedContents[k]);
+			}
+			
+			suitcaseContents.sort(Item.sort);
 			
 			trace("Filled suitcase with " + suitcaseContents.length + " items.");
 						
