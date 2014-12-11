@@ -105,7 +105,7 @@ package {
 		}		
 		
 		public function placeItem():Boolean {
-			if (queuedItems.length() == 0) return false;
+			if (queuedItems.length == 0) return false;
 			
 			var item:Item = queuedItems[item_index];
 			//if the item can't be placed don't place it
