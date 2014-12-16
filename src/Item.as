@@ -168,16 +168,6 @@ package {
 			DisplayQueue.addSprite(positionedSprite);
 			
 			/*
-			var xx:int = Constant.SUITCASE_OFFSET[cameraRotation].x + position.x*Constant.BLOCK_WIDTH - zx_offset*position.z - 250;
-			var yy:int = Constant.SUITCASE_OFFSET[cameraRotation].y - position.y*Constant.BLOCK_WIDTH - zy_offset*position.z - currentSprite.height + 125;
-			
-			
-			trace("sprite position: " + xx + " " + yy + " postion: " + position.x + " " + position.y);
-			currentSprite.x = xx;
-			currentSprite.y = yy;
-			this.addChild(currentSprite);
-			*/
-			
 			var cameraMat:Matrix = new Matrix(0, Math.PI*cameraRotation/2, 0);
 			
 			
@@ -211,7 +201,7 @@ package {
 				placingQuadLeft.skewY =  Constant.ISOMETRIC_ANGLE;
 				placingQuadLeft.alpha = .25;
 				this.addChild(placingQuadLeft);
-			}
+			}*/
 			
 		}
 

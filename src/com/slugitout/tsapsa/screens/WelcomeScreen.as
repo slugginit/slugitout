@@ -61,7 +61,7 @@ package com.slugitout.tsapsa.screens
 		private var belt:Image;
 		private var scoreimage:Image;
 		
-		private var suitcase:Suitcase = new Suitcase(new IntPoint(8, 5, 5));
+		private var suitcase:Suitcase = new Suitcase(new IntPoint(8, 5, 5), null);
 		private var builder:SuitcaseBuilder;
 		
 		private function initItems(e:flash.events.Event):void {
@@ -154,6 +154,11 @@ package com.slugitout.tsapsa.screens
 			if (e.keyCode == Keyboard.E){
 				cameraRotation += 1;
 				suitcase.rotateCamera(cameraRotation);
+			}
+			
+			//item swapping
+			if (e.keyCode == Keyboard.R) {
+				suitcase.swapStoredItem();
 			}
 			
 

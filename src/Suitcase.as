@@ -30,6 +30,8 @@ package {
 		private var saveArray:Array=new Array();
 		private var nameArray:Array=new Array();
 		private var imgarray:Array=new Array();
+		
+		private var storedItem:Item = null;
 		private var placedItems:Vector.<Item> = new Vector.<Item>();
 		private var queuedItems:Vector.<Item> = new Vector.<Item>();
 		private var item_index:int = 0;
@@ -45,7 +47,23 @@ package {
 		
 		private var saveFile:SharedObject=SharedObject.getLocal("save1");
 		
-		public function Suitcase(size:IntPoint) {
+		public function getStoredItem() {
+			return storedItem;
+		}
+		
+		public function swapStoredItem() {
+			if (storedItem != null)
+				queuedItems.push(storedItem);
+			
+			storedItem = queuedItems[item_index];
+			queuedItems.splice(item_index, 1);
+			
+			queuedItems.sort(Item.sort);
+			
+			cycleQueuedItem(0);
+		}
+		
+		public function Suitcase(size:IntPoint, storedItem:Item) {
 			Constant.SUITCASE_OFFSET = new Array(4);
 			Constant.SUITCASE_OFFSET[0] = new IntPoint(500, 700, 0);
 			Constant.SUITCASE_OFFSET[1] = new IntPoint(400, 500, 0);
@@ -65,6 +83,8 @@ package {
 						contents[i][k][j] = false;
 				}
 			}
+			
+			this.storedItem = storedItem;
 			
 			placedItems = new Vector.<Item>();
 			saveFile.clear();
@@ -183,28 +203,18 @@ package {
 			
 			this.addChild(textField);
 			
+			//draw stored item
+			if (storedItem != null) {
+				var iconSprite:Image = new Image(Assets.getTexture(storedItem.spritePrefix + "Icon"));
+				iconSprite.x = 65;
+				iconSprite.y = 550;
+				this.addChild(iconSprite);
+				
+			}
+			
 		}
-		
-		public function drawSuitcase():void {
-			this.removeChildren(0, this.numChildren);
-			displayQueue.clearQueue();
-			
-			
-			
-			//draw objects
-			for (i = 0; i < placedItems.length; i++){
-				placedItems[i].drawObjectGuidelines(orientation.y, size.y, Color.GRAY);
-				this.addChild(placedItems[i]);
-			}
-			//draw queued item guidelines
-			if (queuedItems.length > 0) {
-				queuedItems[item_index].drawObjectGuidelines(orientation.y, size.y, Color.BLUE);
-				this.addChild(queuedItems[item_index]);
-			}
-			
-			displayQueue.drawObjects();
-			this.addChild(displayQueue);
-			
+	
+		private function drawSuitcaseGuidelines():void {
 			//draw guidelines
 			//trace("Rotated bag: " + rotatedBag.toString() + " rotation: " + orientation.y);
 			var left_offset:Number = Math.sin(Math.PI/4)*(Constant.BLOCK_WIDTH*.615);
@@ -310,6 +320,30 @@ package {
 				this.addChild(leftZQuad);
 				
 			}
+			
+			
+		}
+		
+		public function drawSuitcase():void {
+			this.removeChildren(0, this.numChildren);
+			displayQueue.clearQueue();
+			
+			//draw objects
+			for (var i:int = 0; i < placedItems.length; i++){
+				placedItems[i].drawObjectGuidelines(orientation.y, size.y, Color.GRAY);
+				this.addChild(placedItems[i]);
+			}
+			//draw queued item guidelines
+			if (queuedItems.length > 0) {
+				queuedItems[item_index].drawObjectGuidelines(orientation.y, size.y, Color.BLUE);
+				this.addChild(queuedItems[item_index]);
+			}
+			
+			displayQueue.drawObjects();
+			this.addChild(displayQueue);
+			
+			//draw suitcase skeleton
+			drawSuitcaseGuidelines();
 			
 			//draw placed item guidelines
 			for (i = 0; i < placedItems.length; i++){
