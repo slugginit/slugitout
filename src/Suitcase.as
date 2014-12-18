@@ -474,9 +474,9 @@ package {
 			
 			//rotate all the items while we're at it
 			for (var i:int = 0; i < placedItems.length; i++)
-				placedItems[i].rotateItem(new Point(0, cameraOffset*Math.PI/2, 0));
+				placedItems[i].rotateItem(new Point(0, cameraOffset*Math.PI/2, 0),0);
 			if (queuedItems.length > 0)
-				queuedItems[item_index].rotateItem(new Point(0, cameraOffset*Math.PI/2, 0));
+				queuedItems[item_index].rotateItem(new Point(0, cameraOffset*Math.PI/2, 0),0);
 		}
 		
 		public function moveItem(transPoint:IntPoint, rotPoint:Point) :void {
@@ -501,7 +501,7 @@ package {
 			var p:IntPoint;
 			
 			//rotate the skeleton - move it if it is out of bounds, otherwise just check it
-			item.rotateItem(rotPoint);
+			item.rotateItem(rotPoint,orientation.y);
 			item.positionedSkeleton = new Vector.<SkeletonPoint>();
 			for (var i:int = 0; i < item.skeleton.length; i++) {
 				//item.skeleton[i] = rotMat.rotateInt(item.skeleton[i]);

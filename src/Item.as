@@ -205,10 +205,29 @@ package {
 			
 		}
 
-		public function rotateItem(rotPoint:Point):void {
+		public function rotateItem(rotPoint:Point,suitcaserot:int):void {
 			//trace("Rotating object " + spritePrefix + ": " + rotPoint.toString());
 			var mapping:ArtMapping = new ArtMapping();
+			var phold:int=0;
 			
+			switch (suitcaserot){
+				case 0:
+					break;
+				case 1:
+					phold=rotPoint.x;
+					rotPoint.x=rotPoint.z;
+					rotPoint.z=-phold;
+					break;
+				case 2:
+					rotPoint.x = -rotPoint.x;
+					rotPoint.z = -rotPoint.z;
+					break;
+				case 3:
+					phold=rotPoint.x;
+					rotPoint.x=-rotPoint.z;
+					rotPoint.z=phold;
+					break;
+			}
 			if (rotPoint.x > 0) {
 				//trace("Rotating " + imageIndex + " to " + ArtMapping.mappings[imageIndex][0]);
 				imageIndex = ArtMapping.mappings[imageIndex][0];
