@@ -45,7 +45,7 @@ package {
 		
 		private var displayQueue:DisplayQueue = new DisplayQueue();
 		
-		private var saveFile:SharedObject=SharedObject.getLocal("save1");
+		private var saveFile:SharedObject;
 		
 		public function getStoredItem() {
 			return storedItem;
@@ -87,7 +87,6 @@ package {
 			this.storedItem = storedItem;
 			
 			placedItems = new Vector.<Item>();
-			saveFile.clear();
 		}
 		
 		public function addFirstItem(filename:String, prefix:String, dispatcher:EventDispatcher):void {
@@ -418,10 +417,12 @@ package {
 		}
 		
 		private function drawPlacedItem(item: Item) : void {
+			var cameraMat:Matrix = new Matrix(0, Math.PI*orientation.y/2, 0);
+			
 			//green out quads where the item is being placed
 			for (var x: int = 0; x < item.positionedSkeleton.length; x++) {
 				//rotate this point
-				var p:IntPoint = item.positionedSkeleton[x].point;
+				var p:IntPoint = cameraMat.rotateInt(item.positionedSkeleton[x].point);
 				var placeable:Boolean = item.positionedSkeleton[x].placeable;
 				
 				//x face
@@ -564,6 +565,12 @@ package {
 		}
 
 		public function saved() :Boolean{
+			for(var a:int = 1;a<4;a++){
+				saveFile=SharedObject.getLocal("save"+a);
+				if(saveFile.data.loaded==true){
+					break;
+				}
+			}
 			return saveFile.data.saved;
 		}
 		

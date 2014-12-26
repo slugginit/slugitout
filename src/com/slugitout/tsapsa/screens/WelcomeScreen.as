@@ -254,9 +254,11 @@ package com.slugitout.tsapsa.screens
 			disposeTemporarily();
 			
 			this.visible = true;
-			if(suitcase.saved()){
+			//uncomment when putting menus back in
+			/*if(suitcase.saved()){
 				suitcase.Loadone();
-			}
+			}*/
+			
 			// If not coming from about, restart playing background music.
 			/*if (screenMode != "about")
 			{
@@ -264,23 +266,6 @@ package com.slugitout.tsapsa.screens
 			}*/
 			
 			screenMode = "welcome";			
-			/*hero.visible = true;
-			playBtn.visible = true;
-			aboutBtn.visible = true;
-			
-			aboutText.visible = false;
-			hsharmaBtn.visible = false;
-			starlingBtn.visible = false;
-			backBtn.visible = false;
-			
-			hero.x = -hero.width;
-			hero.y = 100;
-			
-			tween_hero = new Tween(hero, 4, Transitions.EASE_OUT);
-			tween_hero.animate("x", 80);
-			Starling.juggler.add(tween_hero);
-			*/
-			//this.addEventListener(Event.ENTER_FRAME, floatingAnimation);
 		}
 		
 		/**
