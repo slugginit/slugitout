@@ -476,8 +476,8 @@ package {
 			//rotate all the items while we're at it
 			for (var i:int = 0; i < placedItems.length; i++)
 				placedItems[i].rotateItem(new Point(0, cameraOffset*Math.PI/2, 0),0);
-			if (queuedItems.length > 0)
-				queuedItems[item_index].rotateItem(new Point(0, cameraOffset*Math.PI/2, 0),0);
+			for (var j:int = 0; j < queuedItems.length; j++)
+				queuedItems[j].rotateItem(new Point(0, cameraOffset*Math.PI/2, 0),0);
 		}
 		
 		public function moveItem(transPoint:IntPoint, rotPoint:Point) :void {
