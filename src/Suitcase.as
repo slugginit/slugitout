@@ -48,7 +48,7 @@ package {
 		
 		private var displayQueue:DisplayQueue = new DisplayQueue();
 		
-		private var saveFile:SharedObject=SharedObject.getLocal("save1");
+		private var saveFile:SharedObject;
 		
 		private var loadingScreen:LoadingScreen = new LoadingScreen();
 		
@@ -112,7 +112,6 @@ package {
 			this.storedItem = storedItem;
 			
 			placedItems = new Vector.<Item>();
-			saveFile.clear();
 		}
 		
 		public function addFirstItem(filename:String, prefix:String, dispatcher:EventDispatcher):void {
@@ -458,10 +457,12 @@ package {
 		}
 		
 		private function drawPlacedItem(item: Item) : void {
+			var cameraMat:Matrix = new Matrix(0, Math.PI*orientation.y/2, 0);
+			
 			//green out quads where the item is being placed
 			for (var x: int = 0; x < item.positionedSkeleton.length; x++) {
 				//rotate this point
-				var p:IntPoint = item.positionedSkeleton[x].point;
+				var p:IntPoint = cameraMat.rotateInt(item.positionedSkeleton[x].point);
 				var placeable:Boolean = item.positionedSkeleton[x].placeable;
 				
 				//x face
@@ -514,9 +515,9 @@ package {
 			
 			//rotate all the items while we're at it
 			for (var i:int = 0; i < placedItems.length; i++)
-				placedItems[i].rotateItem(new Point(0, cameraOffset*Math.PI/2, 0));
-			if (queuedItems.length > 0)
-				queuedItems[item_index].rotateItem(new Point(0, cameraOffset*Math.PI/2, 0));
+				placedItems[i].rotateItem(new Point(0, cameraOffset*Math.PI/2, 0),0);
+			for (var j:int = 0; j < queuedItems.length; j++)
+				queuedItems[j].rotateItem(new Point(0, cameraOffset*Math.PI/2, 0),0);
 		}
 		
 		public function moveItem(transPoint:IntPoint, rotPoint:Point) :void {
@@ -541,7 +542,7 @@ package {
 			var p:IntPoint;
 			
 			//rotate the skeleton - move it if it is out of bounds, otherwise just check it
-			item.rotateItem(rotPoint);
+			item.rotateItem(rotPoint,orientation.y);
 			item.positionedSkeleton = new Vector.<SkeletonPoint>();
 			for (var i:int = 0; i < item.skeleton.length; i++) {
 				//item.skeleton[i] = rotMat.rotateInt(item.skeleton[i]);
@@ -604,6 +605,12 @@ package {
 		}
 
 		public function saved() :Boolean{
+			for(var a:int = 1;a<4;a++){
+				saveFile=SharedObject.getLocal("save"+a);
+				if(saveFile.data.loaded==true){
+					break;
+				}
+			}
 			return saveFile.data.saved;
 		}
 		

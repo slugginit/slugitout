@@ -27,13 +27,18 @@ package com.slugitout.tsapsa.screens
 		private var helpMsg:TextField;
 		/** Play button. */
 		private var playBtn:Button;
+		private var saveBtn1:Button;
+		private var saveBtn2:Button;
+		private var saveBtn3:Button;
 		private var contBtn:Button;
 		private var quitBtn:Button;
 		private var helpBtn:Button;
 		private var backBtn:Button;
 		
 		private var loaded:Boolean;
-		private var saveFile:SharedObject=SharedObject.getLocal("save1");
+		private var saveFile1:SharedObject=SharedObject.getLocal("save1");
+		private var saveFile2:SharedObject=SharedObject.getLocal("save2");
+		private var saveFile3:SharedObject=SharedObject.getLocal("save3");
 		
 		public function MenuScreen()
 		{
@@ -47,6 +52,9 @@ package com.slugitout.tsapsa.screens
 			
 			this.visible = true;
 			playBtn.visible=true;
+			saveBtn1.visible=false;
+			saveBtn2.visible=false;
+			saveBtn3.visible=false;
 			contBtn.visible=true;
 			helpBtn.visible=true;
 			quitBtn.visible=true;
@@ -75,7 +83,26 @@ package com.slugitout.tsapsa.screens
 			contBtn.x=400;
 			contBtn.y=300;
 			contBtn.addEventListener(Event.TRIGGERED, onContClick);
+			if(saveFile1.data.placed==null&&saveFile2.data.placed==null&&saveFile3.data.placed==null){
+				contBtn.enabled=false;
+			}
 			this.addChild(contBtn);
+			//savebtns
+			saveBtn1=new Button(Assets.getTexture("play"));
+			saveBtn1.x=400;
+			saveBtn1.y=150;
+			//saveBtn1.addEventListener(Event.TRIGGERED, onPlayClick);
+			this.addChild(saveBtn1);
+			saveBtn2=new Button(Assets.getTexture("play"));
+			saveBtn2.x=400;
+			saveBtn2.y=300;
+			//saveBtn2.addEventListener(Event.TRIGGERED, onPlayClick);
+			this.addChild(saveBtn2);
+			saveBtn3=new Button(Assets.getTexture("play"));
+			saveBtn3.x=400;
+			saveBtn3.y=450;
+			//saveBtn3.addEventListener(Event.TRIGGERED, onPlayClick);
+			this.addChild(saveBtn3);
 			//push for helpmsg
 			helpBtn=new Button(Assets.getTexture("helpbtn"));
 			helpBtn.x=400;
@@ -108,14 +135,110 @@ package com.slugitout.tsapsa.screens
 		
 		private function onPlayClick(event:Event):void
 		{
-			saveFile.clear();
-			saveFile.data.saved=false;
-			this.dispatchEventWith("play",true);
+			playBtn.visible=false;
+			contBtn.visible=false;
+			saveBtn1.visible=true;
+			saveBtn2.visible=true;
+			saveBtn3.visible=true;
+			saveBtn1.enabled=true;
+			saveBtn2.enabled=true;
+			saveBtn3.enabled=true;
+			helpBtn.visible=false;
+			quitBtn.visible=false;
+			backBtn.visible=true;
+			saveBtn1.addEventListener(Event.TRIGGERED, onNewClick(1));
+			saveBtn2.addEventListener(Event.TRIGGERED, onNewClick(2));
+			saveBtn3.addEventListener(Event.TRIGGERED, onNewClick(3));
 		}
 		private function onContClick(event:Event):void
 		{
-			saveFile.data.saved=true;
+			playBtn.visible=false;
+			contBtn.visible=false;
+			saveBtn1.visible=true;
+			saveBtn2.visible=true;
+			saveBtn3.visible=true;
+			helpBtn.visible=false;
+			quitBtn.visible=false;
+			backBtn.visible=true;
+			helpMsg.visible=false;
+			saveBtn1.addEventListener(Event.TRIGGERED, onLoadClick(1));
+			saveBtn2.addEventListener(Event.TRIGGERED, onLoadClick(2));
+			saveBtn3.addEventListener(Event.TRIGGERED, onLoadClick(3));
+			if(saveFile1.data.placed==null){
+				saveBtn1.enabled=false;
+			}
+			if(saveFile2.data.placed==null){
+				saveBtn2.enabled=false;
+			}
+			if(saveFile3.data.placed==null){
+				saveBtn3.enabled=false;
+			}
+		}
+		//
+		private function onNewClick(filenum:int):Function
+		{
+			return function(event:Event):void{
+				switch (filenum){
+					case 1:
+					if(saveFile1.data.placed!=null){
+						saveFile1.clear();
+						saveFile1.data.saved=false;
+					}
+					saveFile1.data.loaded=true;
+					saveFile2.data.loaded=false;
+					saveFile3.data.loaded=false;
+					break;
+					
+					case 2:
+					if(saveFile2.data.placed!=null){						
+						saveFile2.clear();
+						saveFile2.data.saved=false;
+					}
+					saveFile1.data.loaded=false;
+					saveFile2.data.loaded=true;
+					saveFile3.data.loaded=false;
+					break;
+					
+					case 3:
+					if(saveFile3.data.placed!=null){
+						saveFile3.clear();
+						saveFile3.data.saved=false;
+					}
+					saveFile1.data.loaded=false;
+					saveFile2.data.loaded=false;
+					saveFile3.data.loaded=true;
+					break;
+				}
+
 			this.dispatchEventWith("play",true);
+			}
+
+		}
+		private function onLoadClick(filenum:int):Function
+		{
+			return function(event:Event):void{
+				switch (filenum){
+					case 1:
+						saveFile1.data.loaded=true;
+						saveFile2.data.loaded=false;
+						saveFile3.data.loaded=false;
+						break;
+					
+					case 2:
+						saveFile1.data.loaded=false;
+						saveFile2.data.loaded=true;
+						saveFile3.data.loaded=false;
+						break;
+					
+					case 3:
+						saveFile1.data.loaded=false;
+						saveFile2.data.loaded=false;
+						saveFile3.data.loaded=true;
+						break;
+				}
+				this.dispatchEventWith("play",true);
+			}
+			
 		}
 		private function onHelpClick(event:Event):void
 		{
@@ -138,6 +261,15 @@ package com.slugitout.tsapsa.screens
 			quitBtn.visible=true;
 			backBtn.visible=false;
 			helpMsg.visible=false;
+			saveBtn1.visible=false;
+			saveBtn2.visible=false;
+			saveBtn3.visible=false;
+			saveBtn1.removeEventListener(Event.TRIGGERED, onNewClick(1));
+			saveBtn2.removeEventListener(Event.TRIGGERED, onNewClick(2));
+			saveBtn3.removeEventListener(Event.TRIGGERED, onNewClick(3));
+			saveBtn1.removeEventListener(Event.TRIGGERED, onLoadClick(1));
+			saveBtn2.removeEventListener(Event.TRIGGERED, onLoadClick(2));
+			saveBtn3.removeEventListener(Event.TRIGGERED, onLoadClick(3));
 		}
 		public function disposeTemporarily():void
 		{

@@ -217,9 +217,10 @@ package com.slugitout.tsapsa.screens
 		public function initialize():void
 		{
 			this.visible = true;
-			if(suitcase.saved()){
-				suitcase.Loadone();
-			}			
+			//uncomment when putting menus back in
+			/*if(suitcase.saved()){
+				suitcase.Loadone();*/
+
 		}
 		
 		
