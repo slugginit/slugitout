@@ -1,20 +1,22 @@
 // ActionScript file
 package {
 	
+	import com.slugitout.tsapsa.screens.LoadingScreen;
+	
 	import display.DisplayQueue;
 	
 	import flash.events.EventDispatcher;
 	import flash.net.SharedObject;
 	import flash.net.dns.AAAARecord;
 	import flash.utils.Dictionary;
-	
-	import flashx.textLayout.formats.Float;
+	import flash.ui.Keyboard;
 	
 	import starling.display.Image;
 	import starling.display.Quad;
 	import starling.display.Sprite;
 	import starling.text.TextField;
 	import starling.utils.Color;
+	import starling.events.KeyboardEvent;
 	
 	import utilities.IntPoint;
 	import utilities.Matrix;
@@ -41,11 +43,22 @@ package {
 		private var zx_offset: Number = Math.cos(Math.PI/4)*Constant.BLOCK_WIDTH*z_scale;
 		private var zy_offset: Number = Math.sin(Math.PI/4)*Constant.BLOCK_WIDTH*z_scale;
 		
+		public var loaded:Boolean = false;
 		public var done:Boolean = false;
 		
 		private var displayQueue:DisplayQueue = new DisplayQueue();
 		
 		private var saveFile:SharedObject=SharedObject.getLocal("save1");
+		
+		private var loadingScreen:LoadingScreen = new LoadingScreen();
+		
+		public var VICTORY:String = "victory";
+		public var RETIRE:String = "retire";
+		
+		
+		//background objects
+		private var bucket:Image;
+		private var belt:Image;
 		
 		public function getStoredItem() {
 			return storedItem;
@@ -70,6 +83,18 @@ package {
 			Constant.SUITCASE_OFFSET[2] = new IntPoint(900, 500, 0);
 			Constant.SUITCASE_OFFSET[3] = new IntPoint(900, 600, 0);
 			
+			bucket = new Image(Assets.getTexture("bucket"));
+			bucket.x = 0;
+			bucket.y = 500;
+			bucket.width = 256;
+			bucket.height = 256;
+			
+			//draw the belt
+			belt = new Image(Assets.getTexture("belt"));
+			belt.x = 0;
+			belt.y = 0;
+			belt.width = 256;
+			belt.height = 500;
 			
 			orientation = new IntPoint(0, 0, 0);
 			this.size = size;
@@ -159,6 +184,10 @@ package {
 		}
 		
 		private function drawIcons():void {
+			//draw belt and bucket
+			this.addChildAt(bucket, 0);
+			this.addChildAt(belt, 0);
+			
 			//draw icons
 			var offset:int = 0;
 			var currentPrefix:String = null;
@@ -326,6 +355,14 @@ package {
 		
 		public function drawSuitcase():void {
 			this.removeChildren(0, this.numChildren);
+			
+			if(!loaded) {
+				this.addChild(loadingScreen);
+				loadingScreen.drawLoadingScreen();
+				trace("not loaded yet");
+				return;
+			}
+			
 			displayQueue.clearQueue();
 			
 			//draw objects
@@ -344,6 +381,8 @@ package {
 			
 			//draw suitcase skeleton
 			drawSuitcaseGuidelines();
+			
+			
 			
 			//draw placed item guidelines
 			for (i = 0; i < placedItems.length; i++){
@@ -371,6 +410,7 @@ package {
 			
 			var cameraMat:Matrix = new Matrix(0, Math.PI*orientation.y/2, 0);
 			
+			trace("Draw item: " + item.spritePrefix);
 			//green out quads where the item is being placed
 			for (var x: int = 0; x < item.positionedSkeleton.length; x++) {
 				//rotate this point
@@ -653,6 +693,64 @@ package {
 			item.setImage(imagenum[j]);
 			item.placed = true;
 			placedItems.push(item);
+		}
+		
+		public function processInput(e: KeyboardEvent) : String {
+			if (!loaded) return null;
+			
+			var transPoint:IntPoint = new IntPoint(0, 0, 0);
+			var rotPoint:Point = new Point(0, 0, 0);
+			var cameraRotation:Number = 0;
+			
+			if (e.keyCode == Keyboard.TAB)
+				cycleQueuedItem(1);
+			
+			if(e.keyCode == Keyboard.A)
+				transPoint.x--;
+			if (e.keyCode == Keyboard.D)
+				transPoint.x++;
+			if (e.keyCode == Keyboard.W)
+				transPoint.z++;
+			if (e.keyCode == Keyboard.S)
+				transPoint.z--;
+			
+			//item rotation
+			if (e.keyCode == Keyboard.NUMBER_1)
+				rotPoint.x += Math.PI/2;
+			if (e.keyCode == Keyboard.NUMBER_2)
+				rotPoint.y -= Math.PI/2;
+			if (e.keyCode == Keyboard.NUMBER_3)
+				rotPoint.z += Math.PI/2;
+			
+			//camera rotation
+			if (e.keyCode == Keyboard.Q){
+				cameraRotation -= 1;
+				rotateCamera(cameraRotation);
+			}
+			if (e.keyCode == Keyboard.E){
+				cameraRotation += 1;
+				rotateCamera(cameraRotation);
+			}
+			
+			//item swapping
+			if (e.keyCode == Keyboard.R) {
+				swapStoredItem();
+			}
+			
+			
+			moveItem(transPoint, rotPoint);
+			
+			//place item
+			if (e.keyCode == Keyboard.SPACE) {
+				if (placeItem()) {
+					if (done) {
+						trace("You win");
+						return VICTORY;
+					}
+				}
+			}
+			
+			return null;
 		}
 	}
 }

@@ -48,6 +48,19 @@ package
 		[Embed(source="../media/graphics/quit.png")]
 		public static const quitbtn:Class;
 		
+		[Embed(source="../media/graphics/background.png")]
+		public static const background:Class;
+		[Embed(source="../media/graphics/button.png")]
+		public static const button:Class;
+		[Embed(source="../media/graphics/menu_background.png")]
+		public static const menuBackground:Class;
+		
+		[Embed(source="../media/graphics/loading.png")]
+		public static const loadingBackground:Class;
+		
+		[Embed(source="../media/graphics/gameOver.png")]
+		public static const gameOverBackground:Class;
+		
 		/*[Embed(source="../media/graphics/mySpritesheet.xml", mimeType="application/octet-stream")]
 		public static const AtlasXmlGame:Class;
 		
@@ -57,9 +70,6 @@ package
 		/*[Embed(source="../media/graphics/bgLayer1.jpg")]
 		public static const BgLayer1:Class;
 		*/
-		[Embed(source="../media/graphics/background.png")]
-		public static const BgWelcome:Class;
-		
 		[Embed(source="../media/graphics/bucket.png")]	
 		public static const bucket:Class;
 		

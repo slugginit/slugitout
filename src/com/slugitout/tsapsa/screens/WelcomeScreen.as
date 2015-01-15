@@ -39,26 +39,11 @@ package com.slugitout.tsapsa.screens
 	 * 
 	 */
 	public class WelcomeScreen extends Sprite
-	{
-		/** Background image. */
-		private var bg:Image;
-		
-		private var screenMode:String;
-		
+	{		
 		private var cameraAngle:Number = 0;
 		private var loaded:Boolean = false;
 		private var _dispatcher:EventDispatcher = new EventDispatcher();
 		
-		/** Game title. */
-		//private var title:Image;
-		
-
-		/** About button. */
-		//private var aboutBtn:Button;
-		
-		private var hero:Image;
-		private var bucket:Image;
-		private var belt:Image;
 		private var scoreimage:Image;
 		
 		private var suitcase:Suitcase = new Suitcase(new IntPoint(8, 5, 5), null);
@@ -213,22 +198,6 @@ package com.slugitout.tsapsa.screens
 			if(suitcase.getQueueditem().initialized)
 				suitcase.drawSuitcase();
 			
-			//draw the item swap bucket
-			bucket = new Image(Assets.getTexture("bucket"));
-			bucket.x = 0;
-			bucket.y = 500;
-			bucket.width = 256;
-			bucket.height =256;
-			
-			this.addChildAt(bucket,0);
-			
-			//draw the belt
-			belt = new Image(Assets.getTexture("belt"));
-			belt.x = 0;
-			belt.y = 0;
-			belt.width = 256;
-			belt.height = 500;
-			this.addChildAt(belt,0);
 			
 			scoreimage = new Image(Assets.getTexture("scoreimage"));
 			scoreimage.x = 1050;
@@ -239,10 +208,6 @@ package com.slugitout.tsapsa.screens
 			
 			
 		}
-			private function onAboutBackClick(event:Event):void
-		{
-			initialize();
-		}
 		
 		
 		/**
@@ -251,70 +216,15 @@ package com.slugitout.tsapsa.screens
 		 */
 		public function initialize():void
 		{
-			disposeTemporarily();
-			
 			this.visible = true;
 			if(suitcase.saved()){
 				suitcase.Loadone();
-			}
-			// If not coming from about, restart playing background music.
-			/*if (screenMode != "about")
-			{
-				if (!Sounds.muted) Sounds.sndBgMain.play(0, 999);
-			}*/
-			
-			screenMode = "welcome";			
-			/*hero.visible = true;
-			playBtn.visible = true;
-			aboutBtn.visible = true;
-			
-			aboutText.visible = false;
-			hsharmaBtn.visible = false;
-			starlingBtn.visible = false;
-			backBtn.visible = false;
-			
-			hero.x = -hero.width;
-			hero.y = 100;
-			
-			tween_hero = new Tween(hero, 4, Transitions.EASE_OUT);
-			tween_hero.animate("x", 80);
-			Starling.juggler.add(tween_hero);
-			*/
-			//this.addEventListener(Event.ENTER_FRAME, floatingAnimation);
+			}			
 		}
 		
-		/**
-		 
-		 * Animate floating objects. 
-		 
-		 * @param event
-		 
-		 * 
-		 
-		 */
-		/*
-		private function floatingAnimation(event:Event):void
-			
-		{
-			_currentDate = new Date();
-			
-			hero.y = 130 + (Math.cos(_currentDate.getTime() * 0.002)) * 25;
-			playBtn.y = 340 + (Math.cos(_currentDate.getTime() * 0.002)) * 10;
-			aboutBtn.y = 460 + (Math.cos(_currentDate.getTime() * 0.002)) * 10;
-		}
 		
-		/**
-		 * Dispose objects temporarily. 
-		 * 
-		 */
-		public function disposeTemporarily():void
-		{
-			this.visible = false;
-			
-			//if (this.hasEventListener(Event.ENTER_FRAME)) this.removeEventListener(Event.ENTER_FRAME, floatingAnimation);
-			
-			if (screenMode != "about") SoundMixer.stopAll();
-		}
+		
+
 		
 	}
 }

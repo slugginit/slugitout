@@ -1,5 +1,6 @@
 package
 {
+	import flash.desktop.NativeApplication;
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.Loader;
@@ -15,9 +16,16 @@ package
 	public class Main extends Sprite {		
 		/** Starling object. */
 		private var myStarling:Starling;
+		public static const EVT_CLOSEAPP:String = 'close app';
 		
 		public function Main() {		
 			this.addEventListener(Event.ADDED_TO_STAGE, onAddedToStage);
+			
+		}
+		
+		protected function onCloseApp(e:Object):void {
+			trace("trying to close application");
+			NativeApplication.nativeApplication.exit();
 		}
 		
 		/**
@@ -43,6 +51,8 @@ package
 			
 			// Start Starling Framework.
 			myStarling.start();
+			
+			myStarling.addEventListener(EVT_CLOSEAPP, onCloseApp);
 		}
 	}
 }

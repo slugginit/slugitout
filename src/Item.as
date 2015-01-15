@@ -167,42 +167,6 @@ package {
 			//trace("display queue position: " + position + " initialized: " + initialized);
 			DisplayQueue.addSprite(positionedSprite);
 			
-			/*
-			var cameraMat:Matrix = new Matrix(0, Math.PI*cameraRotation/2, 0);
-			
-			
-			//green out quads where the item is being placed
-			for (var x: int = 0; x < positionedSkeleton.length; x++) {
-				//rotate this point by camera rotation
-				var p:IntPoint = cameraMat.rotateInt(positionedSkeleton[x].point);
-				//trace("Rotating " + positionedSkeleton[x].point + " to " + p + " camera rotation: " + cameraRotation);
-				var placeable:Boolean = positionedSkeleton[x].placeable;
-				
-				//x faced
-				var placingQuadFront:Quad = new Quad(Constant.BLOCK_WIDTH, -Constant.BLOCK_WIDTH, color);
-				placingQuadFront.skewX = -Math.PI/24;
-				placingQuadFront.x = Constant.SUITCASE_OFFSET[cameraRotation].x + p.x*Constant.BLOCK_WIDTH - Constant.ZX_OFFSET*p.z;
-				placingQuadFront.y = Constant.SUITCASE_OFFSET[cameraRotation].y - p.y*Constant.BLOCK_WIDTH - Constant.ZY_OFFSET*p.z;
-				placingQuadFront.alpha = 0.25;
-				this.addChild(placingQuadFront);
-				
-				//y face
-				var placingQuadTop:Quad = new Quad(Constant.BLOCK_WIDTH, -Constant.BLOCK_WIDTH*.5, color);
-				placingQuadTop.x = Constant.SUITCASE_OFFSET[cameraRotation].x + p.x*Constant.BLOCK_WIDTH - Constant.ZX_OFFSET*p.z;
-				placingQuadTop.y = Constant.SUITCASE_OFFSET[cameraRotation].y - (p.y+1)*Constant.BLOCK_WIDTH - Constant.ZY_OFFSET*p.z;
-				placingQuadTop.skewX = -(Math.PI/2 - Constant.ISOMETRIC_ANGLE);
-				placingQuadTop.alpha = 0.25;
-				this.addChild(placingQuadTop);
-				
-				//z face
-				var placingQuadLeft:Quad = new Quad(-Constant.BLOCK_WIDTH*.5, -Constant.BLOCK_WIDTH, color);
-				placingQuadLeft.x = Constant.SUITCASE_OFFSET[cameraRotation].x + p.x*Constant.BLOCK_WIDTH - Constant.ZX_OFFSET*p.z;
-				placingQuadLeft.y = Constant.SUITCASE_OFFSET[cameraRotation].y - p.y*Constant.BLOCK_WIDTH - Constant.ZY_OFFSET*p.z;
-				placingQuadLeft.skewY =  Constant.ISOMETRIC_ANGLE;
-				placingQuadLeft.alpha = .25;
-				this.addChild(placingQuadLeft);
-			}*/
-			
 		}
 
 		public function rotateItem(rotPoint:Point):void {

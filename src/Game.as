@@ -14,12 +14,14 @@
 package
 {
 	
+	import com.slugitout.tsapsa.screens.GameScreen;
+	import com.slugitout.tsapsa.screens.MenuScreen;
+	import com.slugitout.tsapsa.screens.WelcomeScreen;
+	
 	import flash.media.SoundMixer;
 	
 	import starling.display.Sprite;
 	import starling.events.Event;
-	import com.slugitout.tsapsa.screens.WelcomeScreen;
-	import com.slugitout.tsapsa.screens.MenuScreen;
 	
 	/**
 	 * This class is the primary Starling Sprite based class
@@ -33,6 +35,8 @@ package
 		/** Screen - Welcome or Main Menu. */
 		private var screenWelcome:WelcomeScreen;
 		private var screenMenu:MenuScreen;
+		
+		private var gameScreen:GameScreen;
 		
 		
 		/** Screen - InGame. */
@@ -60,14 +64,7 @@ package
 			// Initialize screens.
 			initScreens();
 		}
-		
-		/**
-		 
-		 * Initialize screens. 
-		 
-		 * 
-		 
-		 */
+
 		
 		private function initScreens():void
 			
@@ -81,21 +78,20 @@ package
 			//this.addChild(screenInGame);
 			
 			// Welcome screen.
+			/*
 			screenMenu = new MenuScreen();
 			this.addChild(screenMenu);
 			
 			screenWelcome = new WelcomeScreen();
 			this.addChild(screenWelcome);
 			
-			// Create and add Sound/Mute button.
-			/*soundButton = new SoundButton();
-			soundButton.x = int(soundButton.width * 0.5);
-			soundButton.y = int(soundButton.height * 0.5);
-			soundButton.addEventListener(Event.TRIGGERED, onSoundButtonClick);
-			this.addChild(soundButton)
-			*/
+			
 			// Initialize the Welcome screen by default. 
-			screenWelcome.initialize();
+			screenWelcome.initialize();*/
+			
+			gameScreen = new GameScreen();
+			this.addChild(gameScreen);
+			
 		}
 		
 		private function playScreen():void
