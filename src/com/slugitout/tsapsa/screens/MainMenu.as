@@ -21,9 +21,9 @@ package com.slugitout.tsapsa.screens {
 		private var options:Array = new Array(4, 2, 1, 4);
 		
 		//commands to return to main
-		public var EASY_GAME = "easy-game";
-		public var NORMAL_GAME = "normal-game";
-		public var HARD_GAME = "hard-game";
+		public var EASY_GAME = 4;
+		public var NORMAL_GAME = 5;
+		public var HARD_GAME = 6;
 		
 		//possible menu states
 		private var NEW_GAME = 0;
@@ -52,8 +52,8 @@ package com.slugitout.tsapsa.screens {
 		/**
 		 * User pressed enter - selection option based on context.
 		 * */
-		private function selectOption():String {
-			var returnOption:String = null;
+		private function selectOption():int {
+			var returnOption:int = Constant.NO_ACTION;
 			if (currentState == MENU) {
 				if (selectionIndex == 0)
 					currentState = NEW_GAME;
@@ -68,11 +68,11 @@ package com.slugitout.tsapsa.screens {
 			}
 			else if (currentState == NEW_GAME) {
 				if (selectionIndex == 0)
-					returnOption = EASY_GAME;
+					returnOption = Constant.EASY_GAME;
 				else if (selectionIndex == 1)
-					returnOption = NORMAL_GAME;
+					returnOption = Constant.NORMAL_GAME;
 				else if (selectionIndex == 2)
-					returnOption = HARD_GAME;
+					returnOption = Constant.HARD_GAME;
 				else
 					currentState = MENU;
 			}
@@ -89,7 +89,7 @@ package com.slugitout.tsapsa.screens {
 			
 		}
 		
-		public function processInput(e:KeyboardEvent):String {
+		public function processInput(e:KeyboardEvent):int {
 			if (e.keyCode == Keyboard.DOWN || e.keyCode == Keyboard.S) {
 				cycleSelection(1);
 			}
@@ -100,7 +100,7 @@ package com.slugitout.tsapsa.screens {
 				return selectOption();
 			}
 			
-			return null;
+			return -1;
 		}
 		
 		public function drawMenu() : void {

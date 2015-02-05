@@ -54,6 +54,8 @@ package
 		public static const button:Class;
 		[Embed(source="../media/graphics/menu_background.png")]
 		public static const menuBackground:Class;
+		[Embed(source="../media/graphics/pause_background.png")]
+		public static const pauseBackground:Class;
 		
 		[Embed(source="../media/graphics/loading.png")]
 		public static const loadingBackground:Class;

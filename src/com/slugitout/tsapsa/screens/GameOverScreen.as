@@ -7,16 +7,13 @@ package com.slugitout.tsapsa.screens {
 	
 	public class GameOverScreen extends Sprite {
 		private var gameOverBackground:Image;
+				
+		private var signals: Array = new Array(Constant.NEXT_LEVEL, Constant.RETIRE);
 		
-		public var CONTINUE_SIGNAL = "game-over-continue";
-		public var QUIT_SIGNAL = "game-over-quit";
-		
-		private var signals: Array = new Array(CONTINUE_SIGNAL, QUIT_SIGNAL);
-		
-		private var CONTINUE = 0;
+		private var RESTART = 0;
 		private var QUIT = 1;
 		
-		private var selectionIndex:int = CONTINUE;
+		private var selectionIndex:int = RESTART;
 		
 		public function LoadingScreen() {
 			gameOverBackground = new Image(Assets.getTexture("gameOverBackground"));

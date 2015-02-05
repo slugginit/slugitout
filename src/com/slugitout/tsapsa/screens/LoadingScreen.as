@@ -10,13 +10,12 @@ package com.slugitout.tsapsa.screens {
 		}
 		
 		public function drawLoadingScreen() {
+			this.removeChildren(0, this.numChildren);
 			loadingBackground.x = stage.stageWidth/2 - loadingBackground.width/2;
 			loadingBackground.y = stage.stageHeight/2 - loadingBackground.height/2;
+			this.addChild(loadingBackground);
 		}
 		
-		
 	}
-	
-	
 	
 }

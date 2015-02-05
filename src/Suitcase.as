@@ -52,19 +52,15 @@ package {
 		
 		private var loadingScreen:LoadingScreen = new LoadingScreen();
 		
-		public var VICTORY:String = "victory";
-		public var RETIRE:String = "retire";
-		
-		
 		//background objects
 		private var bucket:Image;
 		private var belt:Image;
 		
-		public function getStoredItem() {
+		public function getStoredItem():Item {
 			return storedItem;
 		}
 		
-		public function swapStoredItem() {
+		public function swapStoredItem():void {
 			if (storedItem != null)
 				queuedItems.push(storedItem);
 			
@@ -402,7 +398,7 @@ package {
 		
 		private function drawItem(item: Item) : void {
 			//don't do anything if item didn't get initialized
-			if (!item.initialized){
+			if (!item.initialized || item.positionedSkeleton == null){
 				trace("Trying to draw an item that is not initialized: " + item.spritePrefix + " queue position: " + item_index);
 				return;
 			}
@@ -618,6 +614,11 @@ package {
 			var array1:Array=new Array();
 			var posarray:Array=new Array();
 			var oriarray:Array=new Array();
+			if (saveFile == null) {
+				trace("SAVE FILE IS NULL: ABORTING SAVE");
+				return;
+			}
+			
 			if(saveFile.data.saved){
 				saveArray=saveFile.data.placed;
 				posarray=saveFile.data.position;
@@ -702,8 +703,8 @@ package {
 			placedItems.push(item);
 		}
 		
-		public function processInput(e: KeyboardEvent) : String {
-			if (!loaded) return null;
+		public function processInput(e: KeyboardEvent) : int {
+			if (!loaded) return -1;
 			
 			var transPoint:IntPoint = new IntPoint(0, 0, 0);
 			var rotPoint:Point = new Point(0, 0, 0);
@@ -752,12 +753,12 @@ package {
 				if (placeItem()) {
 					if (done) {
 						trace("You win");
-						return VICTORY;
+						return Constant.VICTORY;
 					}
 				}
 			}
 			
-			return null;
+			return -1;
 		}
 	}
 }

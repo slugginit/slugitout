@@ -31,6 +31,7 @@ package com.slugitout.tsapsa.screens
 		private var gameState = MAIN_MENU;
 		private var menu:MainMenu;
 		private var gameOverScreen:GameOverScreen;
+		private var pauseScreen:PauseScreen;
 		
 		//camera variables
 		private var cameraAngle:Number = 0;
@@ -57,7 +58,7 @@ package com.slugitout.tsapsa.screens
 		
 		
 		private function processInput(e:KeyboardEvent):void {
-			var returnAction:String = null;
+			var returnAction:int = null;
 			
 			/** process input */
 			if (gameState == MAIN_MENU)
@@ -68,7 +69,7 @@ package com.slugitout.tsapsa.screens
 				
 			/**check return for action that needs to be taken*/
 			//start new game - switch state to loading
-			if (returnAction == menu.EASY_GAME || returnAction == menu.NORMAL_GAME || returnAction == menu.HARD_GAME) {
+			if (returnAction == Constant.EASY_GAME || returnAction == Constant.NORMAL_GAME || returnAction == Constant.HARD_GAME) {
 				//build an easy suitcase, draw loading screen, switch state to game
 				createSuitcase(returnAction, null);
 				gameState = GAME;
@@ -76,7 +77,7 @@ package com.slugitout.tsapsa.screens
 			//load existing game - switch state to loading
 			//TODO:
 			//end condition - switch state to game over
-			else if (suitcase != null && returnAction == suitcase.VICTORY) {
+			else if (suitcase != null && returnAction == Constant.VICTORY) {
 				gameState = GAME_OVER;
 			}
 			
@@ -102,7 +103,7 @@ package com.slugitout.tsapsa.screens
 			}
 		}
 		
-		private function createSuitcase(difficulty:String, swapItem:Item):void {
+		private function createSuitcase(difficulty:int, swapItem:Item):void {
 			//todo - determine suitcase size based on difficulty
 			var suitcaseItems:Vector.<Item> = suitcaseBuilder.constructSuitcase(new IntPoint(3, 3, 3));
 			suitcase = new Suitcase(new IntPoint(8, 5, 5), swapItem);
@@ -141,10 +142,5 @@ package com.slugitout.tsapsa.screens
 			menu.drawMenu();
 		}
 		
-		
-		
-		
 	}
-	
-	
 }
