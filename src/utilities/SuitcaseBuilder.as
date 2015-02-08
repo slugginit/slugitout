@@ -10,8 +10,21 @@ package utilities {
 
 	public class SuitcaseBuilder {
 		private var fileName: String = "../rectangles.txt";
+		
+		private var easyFile: String = "../easy_rectangles.txt";
+		private var normalFile: String = "../medium_rectangles.txt";
+		private var hardFile: String = "../hard_rectangles.txt";
+		
 		private var textLoader:URLLoader = new URLLoader();
 		private var rectangles:Vector.<Structure>;
+		
+		private var easyRectangles:Vector.<Structure>;
+		private var normalRectangles:Vector.<Structure>;
+		private var hardRectangles:Vector.<Structure>;
+		
+		public var easyInitialized = false;
+		public var normalInitialized = false;
+		public var hardInitialized = false;
 		
 		private var initialized = false;
 		private var dispatcher:EventDispatcher;
@@ -23,12 +36,78 @@ package utilities {
 			//trace("Preparing to read file");
 			
 			//read in files
-			textLoader.load(new URLRequest(fileName));
-			textLoader.addEventListener(Event.COMPLETE, readFile);
+			textLoader.load(new URLRequest(easyFile));
+			textLoader.addEventListener(Event.COMPLETE, readEasyFile);
+			textLoader.load(new URLRequest(normalFile));
+			textLoader.addEventListener(Event.COMPLETE, readNormalFile);
+			textLoader.load(new URLRequest(hardFile));
+			textLoader.addEventListener(Event.COMPLETE, readHardFile);
 			
 		}
 		
-		private function readFile(e:Event): void {
+		private function readEasyFile(e:Event) : void {
+			easyRectangles = new Vector.<Structure>();
+			processFile(e, easyRectangles);
+			easyInitialized = true;
+			trace("Easy initialized with " + easyRectangles.length + " structs");
+			if (normalInitialized && hardInitialized) {
+				dispatcher.dispatchEvent(new Event("BuilderLoaded"));
+				trace("Sending builder loaded event");	
+			}
+		}
+		
+		private function readNormalFile(e:Event) : void {
+			normalRectangles = new Vector.<Structure>();
+			processFile(e, normalRectangles);
+			normalInitialized = true;
+			trace("Normal initialized with " + normalRectangles.length + " structs");
+			if (easyInitialized && hardInitialized) {
+				dispatcher.dispatchEvent(new Event("BuilderLoaded"));
+				trace("Sending builder loaded event");
+			}
+		}
+		
+		private function readHardFile(e:Event) : void {
+			hardRectangles = new Vector.<Structure>();
+			processFile(e, hardRectangles);
+			hardInitialized = true;
+			trace("Hard initialized with " + hardRectangles.length + " structs");
+			if (normalInitialized && easyInitialized) {
+				trace("Sending builder loaded event");
+				dispatcher.dispatchEvent(new Event("BuilderLoaded"));
+			}
+		}
+		
+		private function processFile(e:Event, rects:Vector.<Structure>) : void {
+			var lines:Array = e.target.data.split(/\n/);
+			
+			var size:IntPoint = new IntPoint(0, 0, 0);
+			for (var i:int = 0; i < lines.length; i++) {
+				//size line
+				var sizeLine:Array = lines[i].split("x");
+				size = new IntPoint(sizeLine[0], sizeLine[1], sizeLine[2]);
+				var struct:Structure = new Structure(size);
+				i++;
+				
+				//item lines
+				while(i < lines.length && lines[i].length > 2) {
+					var itemLine:Array = lines[i].split(" ");
+					var pos:IntPoint = new IntPoint(0, 0, 0);
+					pos.fromString(itemLine[1]);
+					var rot:IntPoint = new IntPoint(0, 0, 0);
+					rot.fromString(itemLine[2]);
+					struct.loadObject(itemLine[0], pos, rot);
+					i++;
+					
+				}
+				
+				struct.sortContents();
+				rects.push(struct);
+			}
+			
+		}
+		
+		/*private function readFile(e:Event): void {
 			//trace("Loading rectangles file completed - reading");
 			rectangles = new Vector.<Structure>();
 			var lines:Array = e.target.data.split(/\n/);
@@ -59,7 +138,7 @@ package utilities {
 			}
 			
 			dispatcher.dispatchEvent(new Event("BuilderLoaded"));
-		}
+		}*/
 		
 		//find the first valid rectangle furthest left - returns Rect for where it starts and what size it is
 		private function identifySubRectangle(layer:Array): Rectangle {
@@ -96,26 +175,34 @@ package utilities {
 		
 		private function findStructure(rect:Rectangle, ySize:int, layer:Array, ceiling:int):Structure {
 			var subsetRects:Vector.<Structure> = new Vector.<Structure>();
-			//trace("Find Structure -  ySize: " + ySize + " ceiling: " + ceiling + " rectangles: " + rectangles.length);
-			//if ySize is 0, just pick any struct with height less than the ceiling
+			trace("Find Structure -  ySize: " + ySize + " ceiling: " + ceiling + " rectangles: " + rectangles.length);
+			//if ySize is 0, just pick any struct with height less than the ceiling (and with size in bounds)
 			if(ySize == 0) {
 				for (var k:int = 0; k < rectangles.length; k++) {
 					var size:IntPoint = rectangles[k].size;
-					if (size.y <= ceiling)
+					if (size.y <= ceiling && size.x <= rect.width && size.z <= rect.height) {
 						subsetRects.push(rectangles[k]);
-					else if (size.x <= ceiling) {
+						trace("Adding struct " + size.toString() + " bounds " + rect.toString() + " with no transform");	
+					}
+					else if (size.z <= ceiling) {
 						var rotMat:Matrix = new Matrix(Math.PI/2, 0, 0);
 						size = rotMat.rotateInt(size);
 						size.toAbs();
 						rectangles[k].size = size;
-						subsetRects.push(rectangles[k]);
+						if (size.x <= rect.width && size.z <= rect.height) {
+							trace("Adding struct " + size.toString() + " bounds " + rect.toString() + " with x rot");
+							subsetRects.push(rectangles[k]);
+						}
 					}
-					else if (size.z <= ceiling) {
+					else if (size.x <= ceiling) {
 						var rotMat:Matrix = new Matrix(0, 0, Math.PI/2);
 						size = rotMat.rotateInt(size);
 						size.toAbs();
 						rectangles[k].size = size;
-						subsetRects.push(rectangles[k]);
+						if (size.x <= rect.width && size.z <= rect.height) {
+							trace("Adding struct " + size.toString() + " bounds " + rect.toString() + " with z rot");
+							subsetRects.push(rectangles[k]);
+						}
 					}
 				}
 			}
@@ -154,14 +241,14 @@ package utilities {
 			
 			var chosenStruct:Structure = null;
 			var chosenSize:IntPoint = new IntPoint(rect.width, 0, rect.height);
-			//trace("Found " + subsetRects.length + " potential structures.");
+			trace("Found " + subsetRects.length + " potential structures.");
 			if (subsetRects.length > 0) {
 				var index:int = Math.random()*subsetRects.length;
 				chosenStruct = subsetRects[index];
 				chosenSize = chosenStruct.size;
 			}
 			
-			//trace("filling array " + chosenSize);
+			trace("filling array " + chosenSize);
 			//color array where new block is going
 			for (var x:int = 0; x < chosenSize.x; x++) {
 				for (var z:int = 0; z < chosenSize.z; z++)
@@ -171,7 +258,26 @@ package utilities {
 			return chosenStruct;
 		}
 		
-		public function constructSuitcase(size:IntPoint):Vector.<Item> {
+		private function addToRectangles(rects:Vector.<Structure>): void {
+			for (var i:int = 0; i < rects.length; i++) {
+				rectangles.push(rects[i]);
+			}
+		}
+		
+		public function constructSuitcase(size:IntPoint, difficulty:int):Vector.<Item> {
+			trace("constructing a suitcase of size " + size.toString() + " with difficulty " + difficulty);
+			
+			rectangles = new Vector.<Structure>();
+			addToRectangles(easyRectangles);
+			if (difficulty == Constant.NORMAL_GAME) {
+				addToRectangles(normalRectangles);
+			}
+			if (difficulty == Constant.HARD_GAME) {
+				addToRectangles(normalRectangles);
+				addToRectangles(hardRectangles);
+			}
+			
+			trace("Done adding to rectangles - pool size is " + rectangles.length);
 			
 			var ceiling:int = size.y;
 			
@@ -179,6 +285,7 @@ package utilities {
 			var structs:Vector.<Structure> = new Vector.<Structure>();
 			
 			while(ceiling > 0) {
+				trace("Making a new layer");
 				//reset layer array
 				var layer:Array = new Array(size.x);
 				for(var x: int = 0; x < layer.length; x++) {
@@ -189,53 +296,48 @@ package utilities {
 				
 				var rectSize:Rectangle;
 				var ySize:int = 0;
-				//trace("Filling a new layer, ceiling: " + ceiling);
 				while ((rectSize = identifySubRectangle(layer)) != null) {
+					trace("Found subrectangle - " + rectSize.toString());
 					var struct:Structure = findStructure(rectSize, ySize, layer, ceiling);
 					//print layer for debugging
-					//trace("LAYER");
 					for (x = 0; x < layer.length; x++) {
 						var s:String = "";
 						for (z = 0; z < size.z; z++)
 							s += layer[x][z] == false ? "-" : "x";
-						//trace("\t" + s);	
 					}
 					
 					//if it's null we couldn't fill this sub-rectangle
-					if (struct == null) continue;
-					//trace("\tFound struct of size " + struct.size);
+					if (struct == null){ trace("Could not fill subrectangle"); continue; }
+					trace("Found structure - " + struct.size.toString());
 					ySize = struct.size.y;
 					
-					var updatedPosition:IntPoint = new IntPoint(rectSize.x, size.y - ceiling, rectSize.y);
-					//trace("Update position: " + updatedPosition.toString());
+					//var updatedPosition:IntPoint = new IntPoint(rectSize.x, size.y - ceiling, rectSize.y);
 					
 					structs.push(struct);
-					//var copiedContents:Vector.<Item> = !initialized ? struct.unloadObjectsWithDispatcher(dispatcher) : struct.unloadObjects(updatedPosition);
-					//initialized = true;
 					
-					/*for(var i:int = 0; i < copiedContents.length; i++) {
-						trace("Adding " + copiedContents[i].spritePrefix);
-						suitcaseContents.push(copiedContents[i]);
-					}*/
-
 				}
 				
+				if (ySize == 0) { 
+					trace("could not find a rectangle to fill ceiling " + ceiling);
+					break;
+				}
 				ceiling -= ySize;
-				//trace("Ceiling : " + ceiling);
+				trace("New ceiling is " + ceiling);
 			}
 			
 			//sort objects and unload them with a dispatcher on the first item
+			trace("Found " + structs.length + " structs");
 			structs.sort(Structure.sort);
 			var copiedContents:Vector.<Item> = structs[0].unloadObjectsWithDispatcher(dispatcher);
 			for (var i:int = 0; i < copiedContents.length; i++)
 				suitcaseContents.push(copiedContents[i]);
 				
-			
+			/*
 			for (var i:int = 0; i < structs.length; i++) {
 				copiedContents = structs[i].unloadObjects();
 				for (var k:int = 0; k < copiedContents.length; k++)
 					suitcaseContents.push(copiedContents[k]);
-			}
+			}*/
 			
 			suitcaseContents.sort(Item.sort);
 			

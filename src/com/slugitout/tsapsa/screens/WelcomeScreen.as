@@ -50,7 +50,7 @@ package com.slugitout.tsapsa.screens
 		private var builder:SuitcaseBuilder;
 		
 		private function initItems(e:flash.events.Event):void {
-			var suitcaseItems:Vector.<Item> = builder.constructSuitcase(new IntPoint(3, 3, 3));
+			var suitcaseItems:Vector.<Item> = builder.constructSuitcase(new IntPoint(3, 3, 3), Constant.EASY_GAME);
 			for (var i:int = 0; i < suitcaseItems.length; i++) {
 				suitcase.addLoadedItemToQueue(suitcaseItems[i]);
 			}
